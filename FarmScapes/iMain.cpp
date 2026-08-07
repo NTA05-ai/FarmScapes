@@ -116,7 +116,7 @@ void drawCredits() {
     iShowBMPAlternative2(300, 520, "assets/credits.bmp", 0xFFFFFF);
     // 3. Large Wooden Board Frame (X: 120, Y: 240, Width: 560, Height: 200)
     iSetColor(255, 255, 255);
-    iShowBMPAlternative2(120, 240, "assets/board.bmp", 0xFFFFFF);
+    iShowBMPAlternative2(120, 230, "assets/board.bmp", 0xFFFFFF);
 
     // 4. Names Inside the Board (Dark text for readability on wood)
     iSetColor(30, 20, 10); // Dark brown / black text
