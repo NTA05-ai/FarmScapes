@@ -71,38 +71,21 @@ Tile farmGrid[GRID_ROWS][GRID_COLS];
 // ==========================================
 
 void drawMenu() {
-	// Reset color to white before displaying menu background BMP
-	iSetColor(255, 255, 255);
-	iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
+    iSetColor(255, 255, 255);
+    iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
 
-	// Title
-	iSetColor(0, 100, 0);
-	iText(310, 540, "FARMSCAPES", GLUT_BITMAP_TIMES_ROMAN_24);
+    // Title Text
+    iSetColor(20, 20, 20);
+    iText(312, 538, "FARMSCAPES", GLUT_BITMAP_TIMES_ROMAN_24);
+    iSetColor(255, 215, 0);
+    iText(310, 540, "FARMSCAPES", GLUT_BITMAP_TIMES_ROMAN_24);
 
-	// Re-aligned Buttons (4 items evenly spaced on 800x600 screen)
-	// Button 1: Play Game
-	iSetColor(139, 69, 19);
-	iFilledRectangle(300, 420, 200, 50);
-	iSetColor(255, 255, 255);
-	iText(360, 438, "PLAY GAME", GLUT_BITMAP_HELVETICA_18);
-
-	// Button 2: Settings
-	iSetColor(139, 69, 19);
-	iFilledRectangle(300, 330, 200, 50);
-	iSetColor(255, 255, 255);
-	iText(355, 348, "SETTINGS", GLUT_BITMAP_HELVETICA_18);
-
-	// Button 3: Credits
-	iSetColor(139, 69, 19);
-	iFilledRectangle(300, 240, 200, 50);
-	iSetColor(255, 255, 255);
-	iText(360, 258, "CREDITS", GLUT_BITMAP_HELVETICA_18);
-
-	// Button 4: Exit
-	iSetColor(178, 34, 34);
-	iFilledRectangle(300, 150, 200, 50);
-	iSetColor(255, 255, 255);
-	iText(380, 168, "EXIT", GLUT_BITMAP_HELVETICA_18);
+    // Render Buttons with White (0xFFFFFF) ignored
+    iSetColor(255, 255, 255);
+    iShowBMPAlternative2(300, 420, "assets/play.bmp", 0xFFFFFF);
+    iShowBMPAlternative2(300, 330, "assets/settings.bmp", 0xFFFFFF);
+    iShowBMPAlternative2(300, 240, "assets/credits.bmp", 0xFFFFFF);
+    iShowBMPAlternative2(300, 150, "assets/exit.bmp", 0xFFFFFF);
 }
 
 void drawSettings() {
