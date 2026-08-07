@@ -274,12 +274,21 @@ void iMouse(int button, int state, int mx, int my) {
 
 		// --- SETTINGS MENU ---
 		else if (gameState == STATE_SETTINGS) {
-			if (mx >= 300 && mx <= 500 && my >= 380 && my <= 430) {
-				toggleMusic();
-			}
-			else if (mx >= 330 && mx <= 470 && my >= 150 && my <= 190) {
-				gameState = STATE_MENU;
-			}
+    // Music Toggle Button Click (X: 300 to 500, Y: 350 to 400)
+        if (mx >= 300 && mx <= 500 && my >= 350 && my <= 400) {
+        musicOn = !musicOn; // Flip state
+
+        if (musicOn) {
+            mciSendString("play bgmusic repeat", NULL, 0, NULL);
+        } else {
+            mciSendString("pause bgmusic", NULL, 0, NULL);
+        }
+        }
+
+    // Back to Menu Button Click (X: 300 to 500, Y: 230 to 280)
+        else if (mx >= 300 && mx <= 500 && my >= 230 && my <= 280) {
+        gameState = STATE_MENU;
+        }
 		}
 
 		// --- CREDITS SCREEN ---
