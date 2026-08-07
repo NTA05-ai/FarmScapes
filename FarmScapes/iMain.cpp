@@ -43,23 +43,21 @@ Tile farmGrid[GRID_ROWS][GRID_COLS];
 // ==========================================
 
 void drawMenu() {
-    // 1. Render Menu Background
     iSetColor(255, 255, 255);
     iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
 
-    // 2. Render Title Logo (or use the drop-shadow text trick above)
+    // Title Text
     iSetColor(20, 20, 20);
     iText(312, 538, "FARMSCAPES", GLUT_BITMAP_TIMES_ROMAN_24);
     iSetColor(255, 215, 0);
     iText(310, 540, "FARMSCAPES", GLUT_BITMAP_TIMES_ROMAN_24);
 
-    // 3. Render Image Buttons (Width: 200, Height: 50)
-    // Always set color to pure white (255,255,255) before rendering BMPs
+    // Render Buttons with White (0xFFFFFF) ignored
     iSetColor(255, 255, 255);
-    iShowBMPAlternative(300, 420, "assets/play.bmp");
-    iShowBMPAlternative(300, 330, "assets/settings.bmp");
-    iShowBMPAlternative(300, 240, "assets/credits.bmp");
-    iShowBMPAlternative(300, 150, "assets/exit.bmp");
+    iShowBMPAlternative2(300, 420, "assets/play.bmp", 0xFFFFFF);
+    iShowBMPAlternative2(300, 330, "assets/settings.bmp", 0xFFFFFF);
+    iShowBMPAlternative2(300, 240, "assets/credits.bmp", 0xFFFFFF);
+    iShowBMPAlternative2(300, 150, "assets/exit.bmp", 0xFFFFFF);
 }
 
 void drawLevel1() {
