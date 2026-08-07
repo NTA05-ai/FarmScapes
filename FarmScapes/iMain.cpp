@@ -93,10 +93,7 @@ void drawSettings() {
 	iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
 
 	// Title
-	iSetColor(20, 20, 20);
-	iText(332, 518, "SETTINGS", GLUT_BITMAP_TIMES_ROMAN_24);
-	iSetColor(255, 215, 0);
-	iText(330, 520, "SETTINGS", GLUT_BITMAP_TIMES_ROMAN_24);
+		iShowBMPAlternative2(300, 520, "assets/settings.bmp", 0xFFFFFF);
 
 	// Music Button (Rendered at Y = 350)
 	iSetColor(255, 255, 255);
