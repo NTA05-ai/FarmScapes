@@ -302,12 +302,10 @@ void iMouse(int button, int state, int mx, int my) {
 			}
 		}
 
-		// ==========================================
-		// 3. CREDITS SCREEN
-		// ==========================================
+		// --- CREDITS SCREEN ---
 		else if (gameState == STATE_CREDITS) {
-			// Back Button (Padded 320-480, 140-200)
-			if (mx >= 320 && mx <= 480 && my >= 140 && my <= 200) {
+			// BACK TO MENU Button (X: 300 to 500, Y: 150 to 200 -> Padded 290-510, 140-210)
+			if (mx >= 290 && mx <= 510 && my >= 140 && my <= 210) {
 				gameState = STATE_MENU;
 			}
 		}
