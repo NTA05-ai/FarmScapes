@@ -43,26 +43,23 @@ Tile farmGrid[GRID_ROWS][GRID_COLS];
 // ==========================================
 
 void drawMenu() {
-	// Menu Background (using bitmap_loader.h)
-	iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
+    // 1. Render Menu Background
+    iSetColor(255, 255, 255);
+    iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
 
-	// Title
-	iSetColor(0, 100, 0);
-	iText(310, 520, "FARMSCAPES", GLUT_BITMAP_TIMES_ROMAN_24);
+    // 2. Render Title Logo (or use the drop-shadow text trick above)
+    iSetColor(20, 20, 20);
+    iText(312, 538, "FARMSCAPES", GLUT_BITMAP_TIMES_ROMAN_24);
+    iSetColor(255, 215, 0);
+    iText(310, 540, "FARMSCAPES", GLUT_BITMAP_TIMES_ROMAN_24);
 
-	// Buttons
-	iSetColor(139, 69, 19);
-	iFilledRectangle(300, 380, 200, 50); // Play Button
-	iFilledRectangle(300, 300, 200, 50); // Instructions Button
-
-	iSetColor(178, 34, 34);
-	iFilledRectangle(300, 220, 200, 50); // Exit Button
-
-	// Button Labels
-	iSetColor(255, 255, 255);
-	iText(360, 398, "PLAY GAME", GLUT_BITMAP_HELVETICA_18);
-	iText(335, 318, "INSTRUCTIONS", GLUT_BITMAP_HELVETICA_18);
-	iText(380, 238, "EXIT", GLUT_BITMAP_HELVETICA_18);
+    // 3. Render Image Buttons (Width: 200, Height: 50)
+    // Always set color to pure white (255,255,255) before rendering BMPs
+    iSetColor(255, 255, 255);
+    iShowBMPAlternative(300, 420, "assets/play.bmp");
+    iShowBMPAlternative(300, 330, "assets/settings.bmp");
+    iShowBMPAlternative(300, 240, "assets/credits.bmp");
+    iShowBMPAlternative(300, 150, "assets/exit.bmp");
 }
 
 void drawLevel1() {
