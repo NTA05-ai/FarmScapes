@@ -89,25 +89,26 @@ void drawMenu() {
 }
 
 void drawSettings() {
-	iSetColor(240, 240, 240);
-	iFilledRectangle(0, 0, 800, 600);
+    // 1. Background
+    iSetColor(255, 255, 255);
+    iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
 
-	iSetColor(0, 0, 0);
-	iText(320, 500, "SETTINGS", GLUT_BITMAP_TIMES_ROMAN_24);
+    // 2. Settings Title
+    iSetColor(20, 20, 20);
+    iText(332, 518, "SETTINGS", GLUT_BITMAP_TIMES_ROMAN_24);
+    iSetColor(255, 215, 0);
+    iText(330, 520, "SETTINGS", GLUT_BITMAP_TIMES_ROMAN_24);
 
-	if (musicOn) iSetColor(0, 150, 0);
-	else iSetColor(150, 0, 0);
-	iFilledRectangle(300, 380, 200, 50);
+    // 3. Render Music Toggle Image Button (Positioned at X: 300, Y: 350)
+    iSetColor(255, 255, 255);
+    if (musicOn) {
+        iShowBMPAlternative2(300, 350, "assets/mon.bmp", 0xFFFFFF);
+    } else {
+        iShowBMPAlternative2(300, 350, "assets/moff.bmp", 0xFFFFFF);
+    }
 
-	iSetColor(255, 255, 255);
-	if (musicOn) iText(345, 398, "MUSIC: ON", GLUT_BITMAP_HELVETICA_18);
-	else iText(340, 398, "MUSIC: OFF", GLUT_BITMAP_HELVETICA_18);
-
-	// Back button
-	iSetColor(180, 50, 50);
-	iFilledRectangle(330, 150, 140, 40);
-	iSetColor(255, 255, 255);
-	iText(370, 164, "BACK", GLUT_BITMAP_HELVETICA_12);
+    // 4. Back Button (positioned lower at X: 300, Y: 230)
+    iShowBMPAlternative2(300, 230, "assets/exit.bmp", 0xFFFFFF); // Or a custom back button asset
 }
 
 void drawCredits() {
