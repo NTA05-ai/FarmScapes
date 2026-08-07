@@ -111,21 +111,29 @@ void drawSettings() {
 }
 
 void drawCredits() {
-	iSetColor(240, 240, 240);
-	iFilledRectangle(0, 0, 800, 600);
+    // 1. Background
+    iSetColor(255, 255, 255);
+    iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
 
-	iSetColor(0, 0, 0);
-	iText(320, 500, "CREDITS", GLUT_BITMAP_TIMES_ROMAN_24);
+    // 2. Credits Title
+    iSetColor(20, 20, 20);
+    iText(332, 538, "CREDITS", GLUT_BITMAP_TIMES_ROMAN_24);
+    iSetColor(255, 215, 0);
+    iText(330, 540, "CREDITS", GLUT_BITMAP_TIMES_ROMAN_24);
 
-	iText(250, 420, "Md. Azizur Rahman Ragib", GLUT_BITMAP_HELVETICA_18);
-	iText(250, 380, "Nabiha Tahsin Anika", GLUT_BITMAP_HELVETICA_18);
-	iText(250, 340, "Nadira Fairuza", GLUT_BITMAP_HELVETICA_18);
+    // 3. Large Wooden Board Frame (X: 120, Y: 240, Width: 560, Height: 200)
+    iSetColor(255, 255, 255);
+    iShowBMPAlternative2(120, 240, "assets/credits_board.bmp", 0xFFFFFF);
 
-	// Back button
-	iSetColor(180, 50, 50);
-	iFilledRectangle(330, 150, 140, 40);
-	iSetColor(255, 255, 255);
-	iText(370, 164, "BACK", GLUT_BITMAP_HELVETICA_12);
+    // 4. Names Inside the Board (Dark text for readability on wood)
+    iSetColor(30, 20, 10); // Dark brown / black text
+    iText(160, 380, "Md. Azizur Rahman Ragib, ID:00725105101090", GLUT_BITMAP_HELVETICA_18);
+    iText(160, 330, "Nabiha Tahsin Anika, ID:00725105101099", GLUT_BITMAP_HELVETICA_18);
+    iText(160, 280, "Nadira Fairuza, ID:00725105101118", GLUT_BITMAP_HELVETICA_18);
+
+    // 5. Exit Button
+    iSetColor(255, 255, 255);
+    iShowBMPAlternative2(300, 140, "assets/exit.bmp", 0xFFFFFF);
 }
 
 void drawLevel1() {
