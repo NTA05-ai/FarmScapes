@@ -251,67 +251,76 @@ void iDraw() {
 void iMouse(int button, int state, int mx, int my) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 
-		// --- 1. MENU NAVIGATION (4 Centered Buttons) ---
+		// ==========================================
+		// 1. MAIN MENU NAVIGATION
+		// ==========================================
 		if (gameState == STATE_MENU) {
-			// PLAY GAME Button (X: 300-500, Y: 420-470)
-			if (mx >= 300 && mx <= 500 && my >= 420 && my <= 470) {
+			// PLAY GAME Button (Y: 420-470 -> Padded 410-480)
+			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) {
 				gameState = STATE_LEVEL_1;
 			}
-			// SETTINGS Button (X: 300-500, Y: 330-380)
-			else if (mx >= 300 && mx <= 500 && my >= 330 && my <= 380) {
+			// SETTINGS Button (Y: 330-380 -> Padded 320-390)
+			else if (mx >= 290 && mx <= 510 && my >= 320 && my <= 390) {
 				gameState = STATE_SETTINGS;
 			}
-			// CREDITS Button (X: 300-500, Y: 240-290)
-			else if (mx >= 300 && mx <= 500 && my >= 240 && my <= 290) {
+			// CREDITS Button (Y: 240-290 -> Padded 230-300)
+			else if (mx >= 290 && mx <= 510 && my >= 230 && my <= 300) {
 				gameState = STATE_CREDITS;
 			}
-			// EXIT Button (X: 300-500, Y: 150-200)
-			else if (mx >= 300 && mx <= 500 && my >= 150 && my <= 200) {
+			// EXIT Button (Y: 150-200 -> Padded 140-210)
+			else if (mx >= 290 && mx <= 510 && my >= 140 && my <= 210) {
 				mciSendString("close bgmusic", NULL, 0, NULL);
 				exit(0);
 			}
 		}
 
-		// --- SETTINGS MENU ---
+		// ==========================================
+		// 2. SETTINGS MENU
+		// ==========================================
 		else if (gameState == STATE_SETTINGS) {
-    // Music Toggle Button Click (X: 300 to 500, Y: 350 to 400)
-        if (mx >= 300 && mx <= 500 && my >= 350 && my <= 400) {
-        musicOn = !musicOn; // Flip state
+			// Music Toggle (Padded hit box for easy clicking)
+			if (mx >= 290 && mx <= 510 && my >= 340 && my <= 410) {
+				musicOn = !musicOn;
 
-        if (musicOn) {
-            mciSendString("play bgmusic repeat", NULL, 0, NULL);
-        } else {
-            mciSendString("pause bgmusic", NULL, 0, NULL);
-        }
-        }
-
-    // Back to Menu Button Click (X: 300 to 500, Y: 230 to 280)
-        else if (mx >= 300 && mx <= 500 && my >= 230 && my <= 280) {
-        gameState = STATE_MENU;
-        }
-		}
-
-		// --- CREDITS SCREEN ---
-		else if (gameState == STATE_CREDITS) {
-			if (mx >= 330 && mx <= 470 && my >= 150 && my <= 190) {
+				if (musicOn) {
+					mciSendString("play bgmusic repeat", NULL, 0, NULL);
+				}
+				else {
+					mciSendString("pause bgmusic", NULL, 0, NULL);
+				}
+			}
+			// BACK TO MENU Button (Y: 230-280 -> Padded 220-290)
+			else if (mx >= 290 && mx <= 510 && my >= 220 && my <= 290) {
 				gameState = STATE_MENU;
 			}
 		}
 
-		// --- 2. LEVEL 1 GAMEPLAY ---
+		// ==========================================
+		// 3. CREDITS SCREEN
+		// ==========================================
+		else if (gameState == STATE_CREDITS) {
+			// Back Button (Padded 320-480, 140-200)
+			if (mx >= 320 && mx <= 480 && my >= 140 && my <= 200) {
+				gameState = STATE_MENU;
+			}
+		}
+
+		// ==========================================
+		// 4. LEVEL 1 GAMEPLAY
+		// ==========================================
 		else if (gameState == STATE_LEVEL_1) {
 			// Return to Menu Button
-			if (mx >= 680 && mx <= 780 && my >= 558 && my <= 592) {
+			if (mx >= 670 && mx <= 790 && my >= 550 && my <= 600) {
 				gameState = STATE_MENU;
 				return;
 			}
 
 			// Toolbar Selections
-			if (my >= 28 && my <= 72) {
-				if (mx >= 170 && mx <= 260) selectedTool = 1; // PLOW
-				if (mx >= 290 && mx <= 380) selectedTool = 2; // PLANT
-				if (mx >= 410 && mx <= 500) selectedTool = 3; // WATER
-				if (mx >= 530 && mx <= 630) selectedTool = 4; // HARVEST
+			if (my >= 20 && my <= 80) {
+				if (mx >= 160 && mx <= 270) selectedTool = 1; // PLOW
+				if (mx >= 280 && mx <= 390) selectedTool = 2; // PLANT
+				if (mx >= 400 && mx <= 510) selectedTool = 3; // WATER
+				if (mx >= 520 && mx <= 640) selectedTool = 4; // HARVEST
 			}
 
 			// Farm Grid Interactions
