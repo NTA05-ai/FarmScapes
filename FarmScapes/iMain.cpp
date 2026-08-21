@@ -21,23 +21,13 @@ int gameState = STATE_MENU;
 // ==========================================
 int musicOn = 1; // 1 = playing, 0 = muted
 
+#include "audio.h"
 #include "settings.h"
 #include "credits.h"
 
-void initAudio() {
-	mciSendString("open \"Audios/background.mp3\" type mpegvideo alias bgmusic", NULL, 0, NULL);
-	mciSendString("play bgmusic repeat", NULL, 0, NULL);
-}
 
-void toggleMusic() {
-	musicOn = !musicOn;
-	if (musicOn) {
-		mciSendString("resume bgmusic", NULL, 0, NULL);
-	}
-	else {
-		mciSendString("pause bgmusic", NULL, 0, NULL);
-	}
-}
+
+
 
 // ==========================================
 // PLAYER & GAME VARIABLES
