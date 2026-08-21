@@ -22,6 +22,8 @@ int gameState = STATE_MENU;
 // ==========================================
 int musicOn = 1; // 1 = playing, 0 = muted
 
+#include "settings.h"
+
 void initAudio() {
 	mciSendString("open \"Audios/background.mp3\" type mpegvideo alias bgmusic", NULL, 0, NULL);
 	mciSendString("play bgmusic repeat", NULL, 0, NULL);
@@ -88,24 +90,6 @@ void drawMenu() {
     iShowBMPAlternative2(300, 150, "assets/exit.bmp", 0xFFFFFF);
 }
 
-void drawSettings() {
-	iSetColor(255, 255, 255);
-	iShowBMPAlternative(0, 0, "assets/menu_bg.bmp");
-
-	// Title
-		iShowBMPAlternative2(300, 520, "assets/settings.bmp", 0xFFFFFF);
-
-	// Music Button (Rendered at Y = 350)
-	iSetColor(255, 255, 255);
-	if (musicOn) {
-		iShowBMPAlternative2(300, 350, "assets/mon.bmp", 0xFFFFFF);
-	} else {
-		iShowBMPAlternative2(300, 350, "assets/moff.bmp", 0xFFFFFF);
-	}
-
-	// Back Button (Rendered at Y = 230)
-	iShowBMPAlternative2(300, 230, "assets/exit.bmp", 0xFFFFFF);
-}
 
 void drawCredits() {
     // 1. Background
