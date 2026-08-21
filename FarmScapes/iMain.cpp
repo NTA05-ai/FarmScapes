@@ -1,12 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "iGraphics.h"
-#include "bitmap_loader.h" // Integrates custom BMP direct loader
+#include "bitmap_loader.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <mmsystem.h>       // MCI - used to play background.mp3
+#include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
-
 // ==========================================
 // GAME STATES
 // ==========================================
