@@ -1,10 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "iGraphics.h"
-#include "bitmap_loader.h"
-
-// Tell the compiler that musicOn is declared in main.cpp
+// Access musicOn defined in iMain.cpp
 extern int musicOn;
 
 void drawSettings() {
