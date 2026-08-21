@@ -21,7 +21,7 @@ int gameState = STATE_MENU;
 // ==========================================
 int musicOn = 1; // 1 = playing, 0 = muted
 
-#include "audio.h"
+#include "toggleMusic.h"
 #include "settings.h"
 #include "credits.h"
 
