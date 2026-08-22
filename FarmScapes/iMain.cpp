@@ -7,10 +7,14 @@
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 
+// ==========================================
+// GAME STATES
+// ==========================================
 #define STATE_MENU 0
 #define STATE_LEVEL_1 1
 #define STATE_SETTINGS 2
 #define STATE_CREDITS 3
+#define STATE_LOADING 4 // <-- Added loading state
 
 int gameState = STATE_MENU;
 int musicOn = 1;
@@ -18,6 +22,7 @@ int musicOn = 1;
 #include "toggleMusic.h"
 #include "settings.h"
 #include "credits.h"
+#include "loading.h"     // <-- Included loading header
 #include "updatecropgrowth.h"
 #include "drawlevel1.h"
 
@@ -57,6 +62,7 @@ void iDraw() {
 	iClear();
 
 	if (gameState == STATE_MENU) drawMenu();
+	else if (gameState == STATE_LOADING) drawLoading(); // <-- Render loading screen
 	else if (gameState == STATE_LEVEL_1) drawLevel1();
 	else if (gameState == STATE_SETTINGS) drawSettings();
 	else if (gameState == STATE_CREDITS) drawCredits();
@@ -66,13 +72,18 @@ void iMouse(int button, int state, int mx, int my) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 
 		if (gameState == STATE_MENU) {
-			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) gameState = STATE_LEVEL_1;
+			// Redirect Play Game button to LOADING screen instead of direct level start
+			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) gameState = STATE_LOADING;
 			else if (mx >= 290 && mx <= 510 && my >= 320 && my <= 390) gameState = STATE_SETTINGS;
 			else if (mx >= 290 && mx <= 510 && my >= 230 && my <= 300) gameState = STATE_CREDITS;
 			else if (mx >= 290 && mx <= 510 && my >= 140 && my <= 210) {
 				mciSendString("close bgmusic", NULL, 0, NULL);
 				exit(0);
 			}
+		}
+		// Click anywhere on loading screen to enter Level 1
+		else if (gameState == STATE_LOADING) {
+			gameState = STATE_LEVEL_1;
 		}
 		else if (gameState == STATE_SETTINGS) {
 			if (mx >= 290 && mx <= 510 && my >= 340 && my <= 410) {
@@ -206,7 +217,7 @@ void iPassiveMouseMove(int mx, int my) {}
 void iKeyboard(unsigned char key) {}
 void iSpecialKeyboard(unsigned char key) {}
 void fixedUpdate() {}
-//changing to original
+
 int main() {
 	initFarmGrid();
 	initAudio();
