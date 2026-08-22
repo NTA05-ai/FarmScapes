@@ -206,7 +206,7 @@ void iPassiveMouseMove(int mx, int my) {}
 void iKeyboard(unsigned char key) {}
 void iSpecialKeyboard(unsigned char key) {}
 void fixedUpdate() {}
-//trying to edit through github app
+//changing to original
 int main() {
 	initFarmGrid();
 	initAudio();
