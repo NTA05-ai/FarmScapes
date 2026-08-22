@@ -8,6 +8,7 @@ extern int selectedTool;
 extern int batchTimer;
 extern int batchActive;
 extern int tomatoUnlocked;
+extern int berryUnlocked;
 extern Tile farmGrid[3][3];
 
 inline void drawLevel1() {
@@ -18,36 +19,29 @@ inline void drawLevel1() {
 	// TOP HUD
 	// --------------------------------------
 	iSetColor(50, 50, 50);
-	iFilledRectangle(0, 550, 800, 50);
+	iFilledRectangle(0, 540, 800, 60);
 
-	// Gold Counter
+	// Total Gold Display
 	iSetColor(255, 215, 0);
 	char goldStr[32];
-	sprintf_s(goldStr, sizeof(goldStr), "Gold: $%d", playerGold);
-	iText(20, 568, goldStr, GLUT_BITMAP_HELVETICA_18);
-
-	// Header Text / Mode Indicator
-	if (batchActive) {
-		char timerStr[32];
-		sprintf_s(timerStr, sizeof(timerStr), "Time Left: %ds", batchTimer);
-		iSetColor(255, 50, 50);
-		iText(200, 568, timerStr, GLUT_BITMAP_HELVETICA_18);
-	}
-	else {
-		iSetColor(255, 255, 255);
-		if (tomatoUnlocked) {
-			iText(200, 568, "Level 1: Tomato Mode (25s Limit)", GLUT_BITMAP_HELVETICA_18);
-		}
-		else {
-			iText(200, 568, "Level 1: Mainland Farmland", GLUT_BITMAP_HELVETICA_18);
-		}
-	}
+	sprintf_s(goldStr, sizeof(goldStr), "Total: $%d", playerGold);
+	iText(15, 562, goldStr, GLUT_BITMAP_HELVETICA_18);
 
 	// Return to Menu Button
 	iSetColor(180, 50, 50);
-	iFilledRectangle(680, 558, 100, 34);
+	iFilledRectangle(680, 552, 100, 34);
 	iSetColor(255, 255, 255);
-	iText(710, 570, "MENU", GLUT_BITMAP_HELVETICA_12);
+	iText(710, 564, "MENU", GLUT_BITMAP_HELVETICA_12);
+
+	// --------------------------------------
+	// TIMER DISPLAY (TEXT ONLY)
+	// --------------------------------------
+	if (batchActive) {
+		char timeText[16];
+		sprintf_s(timeText, sizeof(timeText), "Time Left: %ds", batchTimer);
+		iSetColor(255, 255, 0);
+		iText(480, 562, timeText, GLUT_BITMAP_HELVETICA_18);
+	}
 
 	// --------------------------------------
 	// 3x3 FARM TILES
@@ -76,6 +70,12 @@ inline void drawLevel1() {
 				break;
 			case TOMATO_READY:
 				iShowBMPAlternative(t.x, t.y, "assets/tile_tomato_ripe.bmp");
+				break;
+			case BERRY_TREE:
+				iShowBMPAlternative(t.x, t.y, "assets/tile_berrytree.bmp");
+				break;
+			case BERRY_READY:
+				iShowBMPAlternative(t.x, t.y, "assets/tile_berry.bmp");
 				break;
 			case CROP_ROTTEN:
 				iSetColor(80, 50, 20);
@@ -107,7 +107,11 @@ inline void drawLevel1() {
 
 	if (selectedTool == 4) iSetColor(0, 255, 0); else iSetColor(100, 100, 100);
 	iRectangle(530, 28, 100, 44);
-	if (tomatoUnlocked) {
+
+	if (berryUnlocked) {
+		iText(538, 44, "HARVEST($60)", GLUT_BITMAP_HELVETICA_10);
+	}
+	else if (tomatoUnlocked) {
 		iText(538, 44, "HARVEST($45)", GLUT_BITMAP_HELVETICA_10);
 	}
 	else {
