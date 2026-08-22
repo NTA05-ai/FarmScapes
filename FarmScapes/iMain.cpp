@@ -21,13 +21,20 @@ int musicOn = 1;
 #include "updatecropgrowth.h"
 #include "drawlevel1.h"
 
+// Player Earnings & Metrics
 int playerGold = 100;
+int riceGold = 0;
+int tomatoGold = 0;
+int berryGold = 0;
+
 int selectedTool = 0;
 int batchTimer = 0;
 int batchActive = 0;
-#define BATCH_TIME_LIMIT 20
 
-int tomatoUnlocked = 0; // Toggles tomato logic upon clearing initial field
+int tomatoUnlocked = 0;
+int berryUnlocked = 0;
+int hasRottenCrop = 0;
+
 Tile farmGrid[GRID_ROWS][GRID_COLS];
 
 void drawMenu() {
@@ -49,18 +56,10 @@ void drawMenu() {
 void iDraw() {
 	iClear();
 
-	if (gameState == STATE_MENU) {
-		drawMenu();
-	}
-	else if (gameState == STATE_LEVEL_1) {
-		drawLevel1();
-	}
-	else if (gameState == STATE_SETTINGS) {
-		drawSettings();
-	}
-	else if (gameState == STATE_CREDITS) {
-		drawCredits();
-	}
+	if (gameState == STATE_MENU) drawMenu();
+	else if (gameState == STATE_LEVEL_1) drawLevel1();
+	else if (gameState == STATE_SETTINGS) drawSettings();
+	else if (gameState == STATE_CREDITS) drawCredits();
 }
 
 void iMouse(int button, int state, int mx, int my) {
@@ -92,6 +91,7 @@ void iMouse(int button, int state, int mx, int my) {
 				return;
 			}
 
+			// Tool selections
 			if (my >= 20 && my <= 80) {
 				if (mx >= 160 && mx <= 270) selectedTool = 1; // PLOW
 				if (mx >= 280 && mx <= 390) selectedTool = 2; // PLANT
@@ -99,6 +99,7 @@ void iMouse(int button, int state, int mx, int my) {
 				if (mx >= 520 && mx <= 640) selectedTool = 4; // HARVEST
 			}
 
+			// Tile Interactions
 			for (int r = 0; r < GRID_ROWS; r++) {
 				for (int c = 0; c < GRID_COLS; c++) {
 					Tile *t = &farmGrid[r][c];
@@ -109,26 +110,44 @@ void iMouse(int button, int state, int mx, int my) {
 						if (selectedTool == 1) {
 							if (t->state == CROP_EMPTY || t->state == CROP_ROTTEN) {
 								t->state = CROP_PLOWED;
-								t->growTimer = 0; // Starts the 25-second timer in Tomato Mode
+								t->growTimer = 0;
+
+								// Check if ALL 9 tiles are now plowed
+								int allPlowed = 1;
+								for (int r2 = 0; r2 < GRID_ROWS; r2++) {
+									for (int c2 = 0; c2 < GRID_COLS; c2++) {
+										if (farmGrid[r2][c2].state != CROP_PLOWED) {
+											allPlowed = 0;
+											break;
+										}
+									}
+								}
+
+								// Timer triggers ONLY when all tiles are plowed
+								if (allPlowed && !batchActive) {
+									batchActive = 1;
+									batchTimer = 20;
+								}
 							}
 						}
 						// 2. PLANT
 						else if (selectedTool == 2 && t->state == CROP_PLOWED) {
 							if (playerGold >= 5) {
 								playerGold -= 5;
-								t->state = CROP_SEEDED;
 
-								if (!batchActive) {
-									batchActive = 1;
-									batchTimer = BATCH_TIME_LIMIT;
+								if (berryUnlocked) {
+									t->state = BERRY_TREE;
+								}
+								else {
+									t->state = CROP_SEEDED;
 								}
 							}
 						}
 						// 3. WATER
-						else if (selectedTool == 3 && t->state == CROP_SEEDED) {
-							t->state = CROP_WATERED;
-							if (!tomatoUnlocked) {
-								t->growTimer = 0; // Standard crop growth reset
+						else if (selectedTool == 3) {
+							if (t->state == CROP_SEEDED || t->state == BERRY_TREE) {
+								t->state = CROP_WATERED;
+								t->growTimer = 0;
 							}
 						}
 						// 4. HARVEST
@@ -136,27 +155,43 @@ void iMouse(int button, int state, int mx, int my) {
 							if (t->state == CROP_READY) {
 								t->state = CROP_EMPTY;
 								playerGold += 15;
+								riceGold += 15;
 							}
 							else if (t->state == TOMATO_READY) {
 								t->state = CROP_EMPTY;
 								playerGold += 45;
+								tomatoGold += 45;
+							}
+							else if (t->state == BERRY_READY) {
+								t->state = CROP_EMPTY;
+								playerGold += 60;
+								berryGold += 60;
 							}
 
-							// Check if all crops on grid are cleared
-							int remainingCrops = 0;
+							// Check remaining crops
+							int activeCrops = 0;
 							for (int r2 = 0; r2 < GRID_ROWS; r2++) {
 								for (int c2 = 0; c2 < GRID_COLS; c2++) {
 									int s = farmGrid[r2][c2].state;
-									if (s == CROP_SEEDED || s == CROP_WATERED || s == CROP_READY || s == TOMATO_READY) {
-										remainingCrops++;
+									if (s != CROP_EMPTY) {
+										activeCrops++;
 									}
 								}
 							}
 
-							// Clear grid switches to Tomato Mode
-							if (remainingCrops == 0) {
+							// Progression trigger on field clear
+							if (activeCrops == 0) {
 								batchActive = 0;
-								tomatoUnlocked = 1;
+
+								if (!hasRottenCrop) {
+									if (tomatoUnlocked && !berryUnlocked) {
+										berryUnlocked = 1;
+									}
+									else if (!tomatoUnlocked) {
+										tomatoUnlocked = 1;
+									}
+								}
+								hasRottenCrop = 0;
 							}
 						}
 					}
