@@ -7,49 +7,129 @@ extern int playerGold;
 extern int selectedTool;
 extern int batchTimer;
 extern int batchActive;
-extern int tomatoUnlocked;
-extern int berryUnlocked;
 extern Tile farmGrid[3][3];
+
+extern int seedRice, seedTomato, seedBerry;
+extern int cropRiceCount, cropTomatoCount, cropBerryCount;
+extern int isMarketOpen;
+extern int massPlowUnlocked;
+extern int showCapWarning;
+
+extern int riceBuyPrice, riceSellPrice;
+extern int tomatoBuyPrice, tomatoSellPrice;
+extern int berryBuyPrice, berrySellPrice;
+
+inline void drawMarketplaceUI() {
+	iSetColor(30, 30, 40);
+	iFilledRectangle(100, 70, 600, 440);
+
+	iSetColor(255, 215, 0);
+	iRectangle(100, 70, 600, 440);
+	iText(330, 480, "FARM MARKETPLACE", GLUT_BITMAP_TIMES_ROMAN_24);
+
+	char buf[64];
+	sprintf_s(buf, sizeof(buf), "Current Gold: $%d", playerGold);
+	iSetColor(255, 255, 255);
+	iText(130, 445, buf, GLUT_BITMAP_HELVETICA_18);
+
+	// --- SELL INVENTORY ---
+	iSetColor(200, 200, 100);
+	iText(130, 405, "SELL CROPS:", GLUT_BITMAP_HELVETICA_18);
+
+	sprintf_s(buf, sizeof(buf), "Rice: %d/%d (Sell $%d)", cropRiceCount, MAX_INVENTORY_CAP, riceSellPrice);
+	iText(130, 375, buf, GLUT_BITMAP_HELVETICA_12);
+	iSetColor(0, 180, 0); iFilledRectangle(330, 370, 65, 22);
+	iSetColor(255, 255, 255); iText(342, 376, "SELL", GLUT_BITMAP_HELVETICA_12);
+
+	sprintf_s(buf, sizeof(buf), "Tomato: %d/%d (Sell $%d)", cropTomatoCount, MAX_INVENTORY_CAP, tomatoSellPrice);
+	iText(130, 335, buf, GLUT_BITMAP_HELVETICA_12);
+	iSetColor(0, 180, 0); iFilledRectangle(330, 330, 65, 22);
+	iSetColor(255, 255, 255); iText(342, 336, "SELL", GLUT_BITMAP_HELVETICA_12);
+
+	sprintf_s(buf, sizeof(buf), "Berry: %d/%d (Sell $%d)", cropBerryCount, MAX_INVENTORY_CAP, berrySellPrice);
+	iText(130, 295, buf, GLUT_BITMAP_HELVETICA_12);
+	iSetColor(0, 180, 0); iFilledRectangle(330, 290, 65, 22);
+	iSetColor(255, 255, 255); iText(342, 296, "SELL", GLUT_BITMAP_HELVETICA_12);
+
+	// --- BUY SEEDS ---
+	iSetColor(200, 200, 100);
+	iText(430, 405, "BUY SEEDS:", GLUT_BITMAP_HELVETICA_18);
+
+	sprintf_s(buf, sizeof(buf), "Rice Seeds: %d ($%d)", seedRice, riceBuyPrice);
+	iText(430, 375, buf, GLUT_BITMAP_HELVETICA_12);
+	iSetColor(0, 100, 200); iFilledRectangle(600, 370, 65, 22);
+	iSetColor(255, 255, 255); iText(612, 376, "BUY", GLUT_BITMAP_HELVETICA_12);
+
+	sprintf_s(buf, sizeof(buf), "Tomato Seeds: %d ($%d)", seedTomato, tomatoBuyPrice);
+	iText(430, 335, buf, GLUT_BITMAP_HELVETICA_12);
+	iSetColor(0, 100, 200); iFilledRectangle(600, 330, 65, 22);
+	iSetColor(255, 255, 255); iText(612, 336, "BUY", GLUT_BITMAP_HELVETICA_12);
+
+	sprintf_s(buf, sizeof(buf), "Berry Seeds: %d ($%d)", seedBerry, berryBuyPrice);
+	iText(430, 295, buf, GLUT_BITMAP_HELVETICA_12);
+	iSetColor(0, 100, 200); iFilledRectangle(600, 290, 65, 22);
+	iSetColor(255, 255, 255); iText(612, 296, "BUY", GLUT_BITMAP_HELVETICA_12);
+
+	// --- SPECIAL UPGRADES ---
+	iSetColor(255, 215, 0);
+	iText(130, 235, "SPECIAL UPGRADES:", GLUT_BITMAP_HELVETICA_18);
+
+	if (!massPlowUnlocked) {
+		iSetColor(255, 255, 255);
+		iText(130, 195, "Mass-Plow All Tiles ($300 gold)", GLUT_BITMAP_HELVETICA_12);
+		iSetColor(200, 50, 50); iFilledRectangle(380, 188, 120, 26);
+		iSetColor(255, 255, 255); iText(392, 195, "UNLOCK ($300)", GLUT_BITMAP_HELVETICA_10);
+	} else {
+		iSetColor(0, 255, 0);
+		iText(130, 195, "Mass-Plow Unlocked! (Use toolbar button)", GLUT_BITMAP_HELVETICA_12);
+	}
+
+	// Close Button
+	iSetColor(180, 50, 50);
+	iFilledRectangle(600, 80, 80, 30);
+	iSetColor(255, 255, 255);
+	iText(618, 90, "CLOSE", GLUT_BITMAP_HELVETICA_12);
+}
 
 inline void drawLevel1() {
 	iSetColor(255, 255, 255);
 	iShowBMPAlternative(0, 0, "assets/mainland_bg.bmp");
 
-	// --------------------------------------
-	// TOP HUD
-	// --------------------------------------
+	// --- TOP HUD ---
 	iSetColor(50, 50, 50);
 	iFilledRectangle(0, 540, 800, 60);
 
-	// Total Gold Display
 	iSetColor(255, 215, 0);
-	char goldStr[32];
-	sprintf_s(goldStr, sizeof(goldStr), "Total: $%d", playerGold);
-	iText(15, 562, goldStr, GLUT_BITMAP_HELVETICA_18);
+	char hudStr[64];
+	sprintf_s(hudStr, sizeof(hudStr), "Total: $%d", playerGold);
+	iText(15, 562, hudStr, GLUT_BITMAP_HELVETICA_18);
 
-	// Return to Menu Button
+	iSetColor(255, 255, 255);
+	sprintf_s(hudStr, sizeof(hudStr), "Seeds (R:%d T:%d B:%d) | Crops (R:%d T:%d B:%d)",
+		seedRice, seedTomato, seedBerry, cropRiceCount, cropTomatoCount, cropBerryCount);
+	iText(130, 562, hudStr, GLUT_BITMAP_HELVETICA_10);
+
+	iSetColor(50, 150, 200);
+	iFilledRectangle(540, 552, 110, 34);
+	iSetColor(255, 255, 255);
+	iText(555, 564, "MARKET", GLUT_BITMAP_HELVETICA_12);
+
 	iSetColor(180, 50, 50);
 	iFilledRectangle(680, 552, 100, 34);
 	iSetColor(255, 255, 255);
 	iText(710, 564, "MENU", GLUT_BITMAP_HELVETICA_12);
 
-	// --------------------------------------
-	// TIMER DISPLAY (TEXT ONLY)
-	// --------------------------------------
 	if (batchActive) {
 		char timeText[16];
-		sprintf_s(timeText, sizeof(timeText), "Time Left: %ds", batchTimer);
+		sprintf_s(timeText, sizeof(timeText), "%ds", batchTimer);
 		iSetColor(255, 255, 0);
-		iText(480, 562, timeText, GLUT_BITMAP_HELVETICA_18);
+		iText(490, 562, timeText, GLUT_BITMAP_HELVETICA_18);
 	}
 
-	// --------------------------------------
-	// 3x3 FARM TILES
-	// --------------------------------------
+	// --- FARM TILES ---
 	for (int r = 0; r < GRID_ROWS; r++) {
 		for (int c = 0; c < GRID_COLS; c++) {
 			Tile t = farmGrid[r][c];
-
 			iSetColor(255, 255, 255);
 
 			switch (t.state) {
@@ -87,11 +167,20 @@ inline void drawLevel1() {
 		}
 	}
 
-	// --------------------------------------
-	// BOTTOM TOOLBAR
-	// --------------------------------------
+	// --- INVENTORY FULL POPUP ---
+	if (showCapWarning) {
+		iSetColor(220, 40, 40);
+		iFilledRectangle(150, 480, 500, 40);
+		iSetColor(255, 255, 255);
+		iRectangle(150, 480, 500, 40);
+		iText(160, 494, "INVENTORY FULL (50)! Please sell your existing crops in Market.", GLUT_BITMAP_HELVETICA_12);
+	}
+
+	// --- TOOLBAR ---
+	int barX = massPlowUnlocked ? 80 : 150;
+	int barWidth = massPlowUnlocked ? 640 : 500;
 	iSetColor(210, 180, 140);
-	iFilledRectangle(150, 20, 500, 60);
+	iFilledRectangle(barX, 20, barWidth, 60);
 
 	if (selectedTool == 1) iSetColor(0, 255, 0); else iSetColor(100, 100, 100);
 	iRectangle(170, 28, 90, 44);
@@ -99,7 +188,7 @@ inline void drawLevel1() {
 
 	if (selectedTool == 2) iSetColor(0, 255, 0); else iSetColor(100, 100, 100);
 	iRectangle(290, 28, 90, 44);
-	iText(305, 44, "PLANT($5)", GLUT_BITMAP_HELVETICA_10);
+	iText(305, 44, "PLANT", GLUT_BITMAP_HELVETICA_12);
 
 	if (selectedTool == 3) iSetColor(0, 255, 0); else iSetColor(100, 100, 100);
 	iRectangle(410, 28, 90, 44);
@@ -107,15 +196,18 @@ inline void drawLevel1() {
 
 	if (selectedTool == 4) iSetColor(0, 255, 0); else iSetColor(100, 100, 100);
 	iRectangle(530, 28, 100, 44);
+	iText(538, 44, "HARVEST", GLUT_BITMAP_HELVETICA_10);
 
-	if (berryUnlocked) {
-		iText(538, 44, "HARVEST($60)", GLUT_BITMAP_HELVETICA_10);
+	if (massPlowUnlocked) {
+		iSetColor(150, 50, 200);
+		iFilledRectangle(90, 28, 70, 44);
+		iSetColor(255, 255, 255);
+		iText(95, 48, "MASS", GLUT_BITMAP_HELVETICA_10);
+		iText(95, 34, "PLOW", GLUT_BITMAP_HELVETICA_10);
 	}
-	else if (tomatoUnlocked) {
-		iText(538, 44, "HARVEST($45)", GLUT_BITMAP_HELVETICA_10);
-	}
-	else {
-		iText(538, 44, "HARVEST($15)", GLUT_BITMAP_HELVETICA_10);
+
+	if (isMarketOpen) {
+		drawMarketplaceUI();
 	}
 }
 

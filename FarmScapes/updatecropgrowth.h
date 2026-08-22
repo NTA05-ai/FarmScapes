@@ -18,24 +18,41 @@
 #define GRID_ROWS 3
 #define GRID_COLS 3
 
+#define MAX_INVENTORY_CAP 50
+
 struct Tile {
 	int x, y;
 	int state;
 	int growTimer;
 	int spoilTimer;
+	int cropType; // 0 = Rice, 1 = Tomato, 2 = Berry
 };
 
 extern int gameState;
 extern int playerGold;
-extern int riceGold;
-extern int tomatoGold;
-extern int berryGold;
 extern int batchTimer;
 extern int batchActive;
-extern int tomatoUnlocked;
-extern int berryUnlocked;
 extern int hasRottenCrop;
 extern Tile farmGrid[GRID_ROWS][GRID_COLS];
+
+// --- INVENTORY & SEEDS ---
+extern int seedRice;
+extern int seedTomato;
+extern int seedBerry;
+
+extern int cropRiceCount;
+extern int cropTomatoCount;
+extern int cropBerryCount;
+
+// --- DYNAMIC PRICING ---
+extern int riceBuyPrice, riceSellPrice;
+extern int tomatoBuyPrice, tomatoSellPrice;
+extern int berryBuyPrice, berrySellPrice;
+
+// --- UI STATES ---
+extern int isMarketOpen;
+extern int massPlowUnlocked;
+extern int showCapWarning;
 
 inline void updateCropGrowth() {
 	if (gameState != STATE_LEVEL_1) return;
@@ -44,25 +61,21 @@ inline void updateCropGrowth() {
 		for (int c = 0; c < GRID_COLS; c++) {
 			Tile *t = &farmGrid[r][c];
 
-			// --- BERRY MODE ---
-			if (berryUnlocked) {
-				if (t->state == CROP_WATERED) {
-					t->state = BERRY_READY;
+			// Tile-specific crop growth calculation
+			if (t->state == CROP_WATERED) {
+				t->growTimer++;
+
+				if (t->cropType == 2) { // Berry
+					if (t->growTimer >= 2) {
+						t->state = BERRY_READY;
+					}
 				}
-			}
-			// --- TOMATO MODE ---
-			else if (tomatoUnlocked) {
-				if (t->state == CROP_WATERED) {
-					t->growTimer++;
+				else if (t->cropType == 1) { // Tomato
 					if (t->growTimer >= 3) {
 						t->state = TOMATO_READY;
 					}
 				}
-			}
-			// --- STANDARD PADDY / CROP MODE ---
-			else {
-				if (t->state == CROP_WATERED) {
-					t->growTimer++;
+				else { // Rice
 					if (t->growTimer >= 5) {
 						t->state = CROP_READY;
 					}
@@ -71,7 +84,7 @@ inline void updateCropGrowth() {
 		}
 	}
 
-	// 20-Second Countdown Batch Timer
+	// Batch Rot Timer Handling
 	if (batchActive) {
 		batchTimer--;
 
@@ -105,6 +118,7 @@ inline void initFarmGrid() {
 			farmGrid[r][c].state = CROP_EMPTY;
 			farmGrid[r][c].growTimer = 0;
 			farmGrid[r][c].spoilTimer = 0;
+			farmGrid[r][c].cropType = 0;
 		}
 	}
 }
