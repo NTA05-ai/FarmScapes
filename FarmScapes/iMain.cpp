@@ -25,25 +25,21 @@ int musicOn = 1;
 
 int playerGold = 100;
 
-// =========================================================
-// MANUAL CROP PRICES (MAX PROFIT = $5 EACH)
-// =========================================================
-int riceBuyPrice = 5, riceSellPrice = 10;       // Profit = $5
-int tomatoBuyPrice = 15, tomatoSellPrice = 20;   // Profit = $5
-int berryBuyPrice = 25, berrySellPrice = 30;     // Profit = $5
-// =========================================================
+// CROP PRICES (MAX PROFIT = $5 EACH)
+int riceBuyPrice = 5, riceSellPrice = 10;
+int tomatoBuyPrice = 15, tomatoSellPrice = 20;
+int berryBuyPrice = 25, berrySellPrice = 30;
 
-// STARTING SEED ALLOCATION (Rice only, 0 for Tomato/Berry)
+// STARTING SEEDS (Only Rice)
 int seedRice = 5;
 int seedTomato = 0;
 int seedBerry = 0;
 
-// HARVESTED INVENTORY
+// INVENTORY
 int cropRiceCount = 0;
 int cropTomatoCount = 0;
 int cropBerryCount = 0;
 
-// GAME STATE FLAGS
 int isMarketOpen = 0;
 int massPlowUnlocked = 0;
 int showCapWarning = 0;
@@ -124,8 +120,9 @@ void iMouse(int button, int state, int mx, int my) {
 				return;
 			}
 
-			// Marketplace Interactions
+			// Marketplace Overlay Interactions
 			if (isMarketOpen) {
+				// Close Market Button
 				if (mx >= 600 && mx <= 680 && my >= 80 && my <= 110) {
 					isMarketOpen = 0;
 					return;
@@ -153,17 +150,17 @@ void iMouse(int button, int state, int mx, int my) {
 					playerGold -= berryBuyPrice; seedBerry++;
 				}
 
-				// Mass-Plow Upgrade ($300)
-				if (!massPlowUnlocked && mx >= 380 && mx <= 500 && my >= 188 && my <= 214) {
-					if (playerGold >= 300) {
-						playerGold -= 300;
+				// Mass-Plow Upgrade ($1500 Gold Check)
+				if (!massPlowUnlocked && mx >= 380 && mx <= 510 && my >= 188 && my <= 214) {
+					if (playerGold >= 1500) {
+						playerGold -= 1500;
 						massPlowUnlocked = 1;
 					}
 				}
 				return;
 			}
 
-			// Mass-Plow execution button
+			// Mass-Plow Button
 			if (massPlowUnlocked && mx >= 90 && mx <= 160 && my >= 28 && my <= 72) {
 				for (int r = 0; r < GRID_ROWS; r++) {
 					for (int c = 0; c < GRID_COLS; c++) {
@@ -216,7 +213,7 @@ void iMouse(int button, int state, int mx, int my) {
 								}
 							}
 						}
-						// 2. PLANT (Priority: Berry -> Tomato -> Rice based on owned seeds)
+						// 2. PLANT
 						else if (selectedTool == 2 && t->state == CROP_PLOWED) {
 							if (seedBerry > 0) {
 								seedBerry--;
@@ -241,7 +238,7 @@ void iMouse(int button, int state, int mx, int my) {
 								t->growTimer = 0;
 							}
 						}
-						// 4. HARVEST (With 50 Inventory Cap Check)
+						// 4. HARVEST
 						else if (selectedTool == 4) {
 							if (t->state == CROP_READY) {
 								if (cropRiceCount < MAX_INVENTORY_CAP) {
