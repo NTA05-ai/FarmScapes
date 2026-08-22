@@ -12,6 +12,8 @@
 #define CROP_READY 4
 #define CROP_ROTTEN 5
 #define TOMATO_READY 6
+#define BERRY_TREE 7
+#define BERRY_READY 8
 
 #define GRID_ROWS 3
 #define GRID_COLS 3
@@ -25,9 +27,14 @@ struct Tile {
 
 extern int gameState;
 extern int playerGold;
+extern int riceGold;
+extern int tomatoGold;
+extern int berryGold;
 extern int batchTimer;
 extern int batchActive;
 extern int tomatoUnlocked;
+extern int berryUnlocked;
+extern int hasRottenCrop;
 extern Tile farmGrid[GRID_ROWS][GRID_COLS];
 
 inline void updateCropGrowth() {
@@ -37,24 +44,23 @@ inline void updateCropGrowth() {
 		for (int c = 0; c < GRID_COLS; c++) {
 			Tile *t = &farmGrid[r][c];
 
-			if (tomatoUnlocked) {
-				// --- TOMATO MODE (25s Total from Plowing) ---
-				if (t->state != CROP_EMPTY && t->state != CROP_ROTTEN) {
+			// --- BERRY MODE ---
+			if (berryUnlocked) {
+				if (t->state == CROP_WATERED) {
+					t->state = BERRY_READY;
+				}
+			}
+			// --- TOMATO MODE ---
+			else if (tomatoUnlocked) {
+				if (t->state == CROP_WATERED) {
 					t->growTimer++;
-
-					// At 17s (after 16s small plant phase), turns into Big Ripe Tomato Tree
-					if (t->growTimer >= 17 && t->state == CROP_WATERED) {
+					if (t->growTimer >= 3) {
 						t->state = TOMATO_READY;
-					}
-
-					// Hard limit: Exactly 25s total timer -> Rots
-					if (t->growTimer >= 25) {
-						t->state = CROP_ROTTEN;
 					}
 				}
 			}
+			// --- STANDARD PADDY / CROP MODE ---
 			else {
-				// --- ORIGINAL CROP PIPELINE ---
 				if (t->state == CROP_WATERED) {
 					t->growTimer++;
 					if (t->growTimer >= 5) {
@@ -65,18 +71,21 @@ inline void updateCropGrowth() {
 		}
 	}
 
+	// 20-Second Countdown Batch Timer
 	if (batchActive) {
 		batchTimer--;
 
 		if (batchTimer <= 0) {
 			batchActive = 0;
+			hasRottenCrop = 1;
 			playerGold -= 20;
 			if (playerGold < 0) playerGold = 0;
 
 			for (int r = 0; r < GRID_ROWS; r++) {
 				for (int c = 0; c < GRID_COLS; c++) {
 					int s = farmGrid[r][c].state;
-					if (s == CROP_SEEDED || s == CROP_WATERED || s == CROP_READY || s == TOMATO_READY) {
+					if (s == CROP_PLOWED || s == CROP_SEEDED || s == CROP_WATERED ||
+						s == CROP_READY || s == TOMATO_READY || s == BERRY_TREE || s == BERRY_READY) {
 						farmGrid[r][c].state = CROP_ROTTEN;
 					}
 				}
