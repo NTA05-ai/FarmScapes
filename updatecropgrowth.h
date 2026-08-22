@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 
-// 1. Game State & Crop Macros
 #define STATE_LEVEL_1 1
 
 #define CROP_EMPTY 0
@@ -12,11 +11,11 @@
 #define CROP_WATERED 3
 #define CROP_READY 4
 #define CROP_ROTTEN 5
+#define TOMATO_READY 6
 
 #define GRID_ROWS 3
 #define GRID_COLS 3
 
-// 2. Tile Structure
 struct Tile {
 	int x, y;
 	int state;
@@ -24,23 +23,43 @@ struct Tile {
 	int spoilTimer;
 };
 
-// 3. Tell header these variables exist in iMain.cpp
 extern int gameState;
 extern int playerGold;
 extern int batchTimer;
 extern int batchActive;
+extern int tomatoUnlocked;
 extern Tile farmGrid[GRID_ROWS][GRID_COLS];
 
-// 4. Functions (marked inline to avoid linker errors)
 inline void updateCropGrowth() {
 	if (gameState != STATE_LEVEL_1) return;
 
 	for (int r = 0; r < GRID_ROWS; r++) {
 		for (int c = 0; c < GRID_COLS; c++) {
-			if (farmGrid[r][c].state == CROP_WATERED) {
-				farmGrid[r][c].growTimer++;
-				if (farmGrid[r][c].growTimer >= 5) {
-					farmGrid[r][c].state = CROP_READY;
+			Tile *t = &farmGrid[r][c];
+
+			if (tomatoUnlocked) {
+				// --- TOMATO MODE (25s Total from Plowing) ---
+				if (t->state != CROP_EMPTY && t->state != CROP_ROTTEN) {
+					t->growTimer++;
+
+					// At 17s (after 16s small plant phase), turns into Big Ripe Tomato Tree
+					if (t->growTimer >= 17 && t->state == CROP_WATERED) {
+						t->state = TOMATO_READY;
+					}
+
+					// Hard limit: Exactly 25s total timer -> Rots
+					if (t->growTimer >= 25) {
+						t->state = CROP_ROTTEN;
+					}
+				}
+			}
+			else {
+				// --- ORIGINAL CROP PIPELINE ---
+				if (t->state == CROP_WATERED) {
+					t->growTimer++;
+					if (t->growTimer >= 5) {
+						t->state = CROP_READY;
+					}
 				}
 			}
 		}
@@ -57,7 +76,7 @@ inline void updateCropGrowth() {
 			for (int r = 0; r < GRID_ROWS; r++) {
 				for (int c = 0; c < GRID_COLS; c++) {
 					int s = farmGrid[r][c].state;
-					if (s == CROP_SEEDED || s == CROP_WATERED || s == CROP_READY) {
+					if (s == CROP_SEEDED || s == CROP_WATERED || s == CROP_READY || s == TOMATO_READY) {
 						farmGrid[r][c].state = CROP_ROTTEN;
 					}
 				}
