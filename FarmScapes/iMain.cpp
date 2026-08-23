@@ -309,10 +309,18 @@ void iKeyboard(unsigned char key) {
 }
 void iSpecialKeyboard(unsigned char key) {
 	if (gameState == STATE_TOWN && !showDialogue) {
-		if (key == GLUT_KEY_UP && playerY < 520) playerY += playerSpeed;
-		if (key == GLUT_KEY_DOWN && playerY > 20) playerY -= playerSpeed;
-		if (key == GLUT_KEY_LEFT && playerX > 20) playerX -= playerSpeed;
-		if (key == GLUT_KEY_RIGHT && playerX < 740) playerX += playerSpeed;
+		if (key == GLUT_KEY_UP && canWalk(playerX, playerY + playerSpeed)) {
+			playerY += playerSpeed;
+		}
+		else if (key == GLUT_KEY_DOWN && canWalk(playerX, playerY - playerSpeed)) {
+			playerY -= playerSpeed;
+		}
+		else if (key == GLUT_KEY_LEFT && canWalk(playerX - playerSpeed, playerY)) {
+			playerX -= playerSpeed;
+		}
+		else if (key == GLUT_KEY_RIGHT && canWalk(playerX + playerSpeed, playerY)) {
+			playerX += playerSpeed;
+		}
 	}
 }
 void fixedUpdate() {}
