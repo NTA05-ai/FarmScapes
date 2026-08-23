@@ -8,6 +8,15 @@
 
 #pragma comment(lib, "winmm.lib")
 
+// --- SCREEN & RENDER DIMENSIONS ---
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+
+// Fixed Player Sprite Size
+#define PLAYER_WIDTH 48
+#define PLAYER_HEIGHT 48
+
+// Game States
 #define STATE_MENU 0
 #define STATE_LEVEL_1 1
 #define STATE_SETTINGS 2
@@ -42,7 +51,7 @@ int riceBuyPrice = 5, riceSellPrice = 10;
 int tomatoBuyPrice = 15, tomatoSellPrice = 20;
 int berryBuyPrice = 25, berrySellPrice = 30;
 
-// STARTING SEEDS (Only Rice)
+// STARTING SEEDS
 int seedRice = 9;
 int seedTomato = 0;
 int seedBerry = 0;
@@ -62,6 +71,13 @@ int batchActive = 0;
 int hasRottenCrop = 0;
 
 Tile farmGrid[GRID_ROWS][GRID_COLS];
+
+// --- BOUNDARY CHECK HELPER ---
+int isWithinBounds(int x, int y) {
+	if (x < 0 || x > SCREEN_WIDTH - PLAYER_WIDTH) return 0;
+	if (y < 0 || y > SCREEN_HEIGHT - PLAYER_HEIGHT) return 0;
+	return 1;
+}
 
 void iDraw() {
 	iClear();
@@ -107,7 +123,7 @@ void iMouse(int button, int state, int mx, int my) {
 
 			// Menu / Back to Town Button
 			if (mx >= 670 && mx <= 790 && my >= 550 && my <= 600) {
-				gameState = STATE_TOWN; // Return directly to Town Map
+				gameState = STATE_TOWN;
 				return;
 			}
 
@@ -119,7 +135,6 @@ void iMouse(int button, int state, int mx, int my) {
 
 			// Marketplace Overlay Interactions
 			if (isMarketOpen) {
-				// Close Market Button
 				if (mx >= 600 && mx <= 680 && my >= 80 && my <= 110) {
 					isMarketOpen = 0;
 					return;
@@ -147,7 +162,7 @@ void iMouse(int button, int state, int mx, int my) {
 					playerGold -= berryBuyPrice; seedBerry++;
 				}
 
-				// Mass-Plow Upgrade ($1500 Gold Check)
+				// Mass-Plow Upgrade
 				if (!massPlowUnlocked && mx >= 380 && mx <= 510 && my >= 188 && my <= 214) {
 					if (playerGold >= 1500) {
 						playerGold -= 1500;
@@ -284,43 +299,62 @@ void iMouseMove(int mx, int my) {}
 void iPassiveMouseMove(int mx, int my) {}
 
 void iKeyboard(unsigned char key) {
-	if ((key == 'e' || key == 'E') && gameState == STATE_TOWN) {
-		if (showDialogue) {
-			showDialogue = 0;
-			return;
+	if (gameState == STATE_TOWN) {
+		// Interaction key
+		if (key == 'e' || key == 'E') {
+			if (showDialogue) {
+				showDialogue = 0;
+				return;
+			}
+			// Cropland (Nadira - Level 1)
+			if (playerX >= 520 && playerX <= 680 && playerY >= 370 && playerY <= 430) {
+				showDialogue = 0;
+				gameState = STATE_LEVEL_1;
+			}
+			// Ranch (Ragib - Level 2)
+			else if (playerX >= 500 && playerX <= 660 && playerY >= 240 && playerY <= 300) {
+				sprintf(npcName, "Ragib");
+				sprintf(dialogueText, level2Unlocked ? "Entering Ranch..." : "Clear Level 1 first!");
+				showDialogue = 1;
+			}
+			// Fishery (Anika - Level 3)
+			else if (playerX >= 500 && playerX <= 660 && playerY >= 130 && playerY <= 190) {
+				sprintf(npcName, "Anika");
+				sprintf(dialogueText, level3Unlocked ? "Entering Fishery..." : "Clear Level 2 first!");
+				showDialogue = 1;
+			}
 		}
-		// Cropland (Nadira - Level 1)
-		if (playerX >= 520 && playerX <= 680 && playerY >= 370 && playerY <= 430) {
-			showDialogue = 0;
-			gameState = STATE_LEVEL_1;
-		}
-		// Ranch (Ragib - Level 2)
-		else if (playerX >= 500 && playerX <= 660 && playerY >= 240 && playerY <= 300) {
-			sprintf(npcName, "Ragib");
-			sprintf(dialogueText, level2Unlocked ? "Entering Ranch..." : "Clear Level 1 first!");
-			showDialogue = 1;
-		}
-		// Fishery (Anika - Level 3)
-		else if (playerX >= 500 && playerX <= 660 && playerY >= 130 && playerY <= 190) {
-			sprintf(npcName, "Anika");
-			sprintf(dialogueText, level3Unlocked ? "Entering Fishery..." : "Clear Level 2 first!");
-			showDialogue = 1;
+
+		// WASD Movement Controls
+		if (!showDialogue) {
+			if ((key == 'w' || key == 'W') && canWalk(playerX, playerY + playerSpeed) && isWithinBounds(playerX, playerY + playerSpeed)) {
+				playerY += playerSpeed;
+			}
+			else if ((key == 's' || key == 'S') && canWalk(playerX, playerY - playerSpeed) && isWithinBounds(playerX, playerY - playerSpeed)) {
+				playerY -= playerSpeed;
+			}
+			else if ((key == 'a' || key == 'A') && canWalk(playerX - playerSpeed, playerY) && isWithinBounds(playerX - playerSpeed, playerY)) {
+				playerX -= playerSpeed;
+			}
+			else if ((key == 'd' || key == 'D') && canWalk(playerX + playerSpeed, playerY) && isWithinBounds(playerX + playerSpeed, playerY)) {
+				playerX += playerSpeed;
+			}
 		}
 	}
 }
 
 void iSpecialKeyboard(unsigned char key) {
 	if (gameState == STATE_TOWN && !showDialogue) {
-		if (key == GLUT_KEY_UP && canWalk(playerX, playerY + playerSpeed)) {
+		if (key == GLUT_KEY_UP && canWalk(playerX, playerY + playerSpeed) && isWithinBounds(playerX, playerY + playerSpeed)) {
 			playerY += playerSpeed;
 		}
-		else if (key == GLUT_KEY_DOWN && canWalk(playerX, playerY - playerSpeed)) {
+		else if (key == GLUT_KEY_DOWN && canWalk(playerX, playerY - playerSpeed) && isWithinBounds(playerX, playerY - playerSpeed)) {
 			playerY -= playerSpeed;
 		}
-		else if (key == GLUT_KEY_LEFT && canWalk(playerX - playerSpeed, playerY)) {
+		else if (key == GLUT_KEY_LEFT && canWalk(playerX - playerSpeed, playerY) && isWithinBounds(playerX - playerSpeed, playerY)) {
 			playerX -= playerSpeed;
 		}
-		else if (key == GLUT_KEY_RIGHT && canWalk(playerX + playerSpeed, playerY)) {
+		else if (key == GLUT_KEY_RIGHT && canWalk(playerX + playerSpeed, playerY) && isWithinBounds(playerX + playerSpeed, playerY)) {
 			playerX += playerSpeed;
 		}
 	}
@@ -330,7 +364,7 @@ void fixedUpdate() {}
 
 void updateSeasonTimer() {
 	seasonTimer++;
-	if (seasonTimer >= 1800) { // Changes every 30 minutes (1800 seconds)
+	if (seasonTimer >= 1800) {
 		seasonTimer = 0;
 		currentSeason = (currentSeason + 1) % 3;
 	}
@@ -343,7 +377,7 @@ int main() {
 	iSetTimer(1000, updateCropGrowth);
 	iSetTimer(1000, updateSeasonTimer);
 
-	iInitialize(800, 600, "FarmScapes - 2D Farming Simulator");
+	iInitialize(SCREEN_WIDTH, SCREEN_HEIGHT, "FarmScapes - 2D Farming Simulator");
 	iStart();
 	return 0;
 }
