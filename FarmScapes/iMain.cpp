@@ -79,6 +79,10 @@ int isWithinBounds(int x, int y) {
 	return 1;
 }
 
+void updatePlayer() {
+	// Forces iGraphics to continuously repaint player coordinates
+}
+
 void iDraw() {
 	iClear();
 
@@ -298,9 +302,41 @@ void iMouse(int button, int state, int mx, int my) {
 void iMouseMove(int mx, int my) {}
 void iPassiveMouseMove(int mx, int my) {}
 
+// --- CONTINUOUS GAME LOOP (Runs every frame via SetTimer) ---
+void fixedUpdate() {
+	// 1. WASD & Arrow Keys Movement
+	if ((gameState == STATE_TOWN && !showDialogue) || gameState == STATE_LEVEL_1) {
+
+		// UP (W or Up Arrow)
+		if (isKeyPressed('w') || isKeyPressed('W') || isSpecialKeyPressed(GLUT_KEY_UP)) {
+			if (gameState == STATE_LEVEL_1 || (canWalk(playerX, playerY + playerSpeed) && isWithinBounds(playerX, playerY + playerSpeed))) {
+				playerY += playerSpeed;
+			}
+		}
+		// DOWN (S or Down Arrow)
+		if (isKeyPressed('s') || isKeyPressed('S') || isSpecialKeyPressed(GLUT_KEY_DOWN)) {
+			if (gameState == STATE_LEVEL_1 || (canWalk(playerX, playerY - playerSpeed) && isWithinBounds(playerX, playerY - playerSpeed))) {
+				playerY -= playerSpeed;
+			}
+		}
+		// LEFT (A or Left Arrow)
+		if (isKeyPressed('a') || isKeyPressed('A') || isSpecialKeyPressed(GLUT_KEY_LEFT)) {
+			if (gameState == STATE_LEVEL_1 || (canWalk(playerX - playerSpeed, playerY) && isWithinBounds(playerX - playerSpeed, playerY))) {
+				playerX -= playerSpeed;
+			}
+		}
+		// RIGHT (D or Right Arrow)
+		if (isKeyPressed('d') || isKeyPressed('D') || isSpecialKeyPressed(GLUT_KEY_RIGHT)) {
+			if (gameState == STATE_LEVEL_1 || (canWalk(playerX + playerSpeed, playerY) && isWithinBounds(playerX + playerSpeed, playerY))) {
+				playerX += playerSpeed;
+			}
+		}
+	}
+}
+
+// Keep these blank or handle single-press toggles here (like 'E' to talk)
 void iKeyboard(unsigned char key) {
 	if (gameState == STATE_TOWN) {
-		// Interaction key
 		if (key == 'e' || key == 'E') {
 			if (showDialogue) {
 				showDialogue = 0;
@@ -324,43 +360,10 @@ void iKeyboard(unsigned char key) {
 				showDialogue = 1;
 			}
 		}
-
-		// WASD Movement Controls
-		if (!showDialogue) {
-			if ((key == 'w' || key == 'W') && canWalk(playerX, playerY + playerSpeed) && isWithinBounds(playerX, playerY + playerSpeed)) {
-				playerY += playerSpeed;
-			}
-			else if ((key == 's' || key == 'S') && canWalk(playerX, playerY - playerSpeed) && isWithinBounds(playerX, playerY - playerSpeed)) {
-				playerY -= playerSpeed;
-			}
-			else if ((key == 'a' || key == 'A') && canWalk(playerX - playerSpeed, playerY) && isWithinBounds(playerX - playerSpeed, playerY)) {
-				playerX -= playerSpeed;
-			}
-			else if ((key == 'd' || key == 'D') && canWalk(playerX + playerSpeed, playerY) && isWithinBounds(playerX + playerSpeed, playerY)) {
-				playerX += playerSpeed;
-			}
-		}
 	}
 }
 
-void iSpecialKeyboard(unsigned char key) {
-	if (gameState == STATE_TOWN && !showDialogue) {
-		if (key == GLUT_KEY_UP && canWalk(playerX, playerY + playerSpeed) && isWithinBounds(playerX, playerY + playerSpeed)) {
-			playerY += playerSpeed;
-		}
-		else if (key == GLUT_KEY_DOWN && canWalk(playerX, playerY - playerSpeed) && isWithinBounds(playerX, playerY - playerSpeed)) {
-			playerY -= playerSpeed;
-		}
-		else if (key == GLUT_KEY_LEFT && canWalk(playerX - playerSpeed, playerY) && isWithinBounds(playerX - playerSpeed, playerY)) {
-			playerX -= playerSpeed;
-		}
-		else if (key == GLUT_KEY_RIGHT && canWalk(playerX + playerSpeed, playerY) && isWithinBounds(playerX + playerSpeed, playerY)) {
-			playerX += playerSpeed;
-		}
-	}
-}
-
-void fixedUpdate() {}
+void iSpecialKeyboard(unsigned char key) {}
 
 void updateSeasonTimer() {
 	seasonTimer++;
@@ -369,13 +372,17 @@ void updateSeasonTimer() {
 		currentSeason = (currentSeason + 1) % 3;
 	}
 }
-
+void iAnim() {
+	// Empty function used strictly to force GLUT to process keyboard input frames
+}
 int main() {
 	initFarmGrid();
 	initAudio();
 
 	iSetTimer(1000, updateCropGrowth);
 	iSetTimer(1000, updateSeasonTimer);
+
+	iSetTimer(20, iAnim);
 
 	iInitialize(SCREEN_WIDTH, SCREEN_HEIGHT, "FarmScapes - 2D Farming Simulator");
 	iStart();
