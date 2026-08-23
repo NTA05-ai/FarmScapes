@@ -24,7 +24,7 @@ int musicOn = 1;
 #include "updatecropgrowth.h"
 #include "drawlevel1.h"
 
-int playerGold = 100;
+int playerGold = 0;
 
 // CROP PRICES (MAX PROFIT = $5 EACH)
 int riceBuyPrice = 5, riceSellPrice = 10;
@@ -32,7 +32,7 @@ int tomatoBuyPrice = 15, tomatoSellPrice = 20;
 int berryBuyPrice = 25, berrySellPrice = 30;
 
 // STARTING SEEDS (Only Rice)
-int seedRice = 5;
+int seedRice = 9;
 int seedTomato = 0;
 int seedBerry = 0;
 
