@@ -97,8 +97,11 @@ void iDraw() {
 void iMouse(int button, int state, int mx, int my) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 
+		// 1. MENU: Play button transitions directly to LEVEL 1
 		if (gameState == STATE_MENU) {
-			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) gameState = STATE_TOWN;
+			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) {
+				gameState = STATE_LEVEL_1; // Changed from STATE_TOWN to STATE_LEVEL_1
+			}
 			else if (mx >= 290 && mx <= 510 && my >= 320 && my <= 390) gameState = STATE_SETTINGS;
 			else if (mx >= 290 && mx <= 510 && my >= 230 && my <= 300) gameState = STATE_CREDITS;
 			else if (mx >= 290 && mx <= 510 && my >= 140 && my <= 210) {
@@ -106,9 +109,7 @@ void iMouse(int button, int state, int mx, int my) {
 				exit(0);
 			}
 		}
-		else if (gameState == STATE_LOADING) {
-			gameState = STATE_LEVEL_1;
-		}
+		// 2. SETTINGS / CREDITS: Back buttons return to MENU
 		else if (gameState == STATE_SETTINGS) {
 			if (mx >= 290 && mx <= 510 && my >= 340 && my <= 410) {
 				musicOn = !musicOn;
@@ -120,14 +121,15 @@ void iMouse(int button, int state, int mx, int my) {
 		else if (gameState == STATE_CREDITS) {
 			if (mx >= 290 && mx <= 510 && my >= 140 && my <= 210) gameState = STATE_MENU;
 		}
+		// 3. LEVEL 1: Top-Right button transitions to TOWN EXPLORATION
 		else if (gameState == STATE_LEVEL_1) {
 			if (showCapWarning) {
 				showCapWarning = 0;
 			}
 
-			// Menu / Back to Town Button
+			// Complete / Go to Town Button (Top Right: X=670-790, Y=550-600)
 			if (mx >= 670 && mx <= 790 && my >= 550 && my <= 600) {
-				gameState = STATE_TOWN;
+				gameState = STATE_TOWN; // Moves forward to Town Map
 				return;
 			}
 
