@@ -12,9 +12,18 @@
 #define STATE_SETTINGS 2
 #define STATE_CREDITS 3
 #define STATE_LOADING 4
+#define STATE_TOWN 5 
 
 int gameState = STATE_MENU;
 int musicOn = 1;
+
+// --- TOWN & SEASON VARIABLES ---
+int playerX = 400, playerY = 300, playerSpeed = 8;
+int currentSeason = 0, seasonTimer = 0; // 0=Summer, 1=Rainy, 2=Winter
+int showDialogue = 0;
+char dialogueText[200] = "";
+char npcName[50] = "";
+int level2Unlocked = 0, level3Unlocked = 0;
 
 #include "toggleMusic.h"
 #include "menu.h"
@@ -23,6 +32,7 @@ int musicOn = 1;
 #include "loading.h"
 #include "updatecropgrowth.h"
 #include "drawlevel1.h"
+#include "drawTown.h"
 
 int playerGold = 0;
 
@@ -59,6 +69,7 @@ void iDraw() {
 
 	if (gameState == STATE_MENU) drawMenu();
 	else if (gameState == STATE_LOADING) drawLoading();
+	else if (gameState == STATE_TOWN) drawTown();
 	else if (gameState == STATE_LEVEL_1) drawLevel1();
 	else if (gameState == STATE_SETTINGS) drawSettings();
 	else if (gameState == STATE_CREDITS) drawCredits();
@@ -68,7 +79,7 @@ void iMouse(int button, int state, int mx, int my) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 
 		if (gameState == STATE_MENU) {
-			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) gameState = STATE_LOADING;
+			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) gameState = STATE_TOWN;
 			else if (mx >= 290 && mx <= 510 && my >= 320 && my <= 390) gameState = STATE_SETTINGS;
 			else if (mx >= 290 && mx <= 510 && my >= 230 && my <= 300) gameState = STATE_CREDITS;
 			else if (mx >= 290 && mx <= 510 && my >= 140 && my <= 210) {
@@ -269,8 +280,41 @@ void iMouse(int button, int state, int mx, int my) {
 
 void iMouseMove(int mx, int my) {}
 void iPassiveMouseMove(int mx, int my) {}
-void iKeyboard(unsigned char key) {}
-void iSpecialKeyboard(unsigned char key) {}
+void iKeyboard(unsigned char key) {
+	if ((key == 'e' || key == 'E') && gameState == STATE_TOWN) {
+		if (showDialogue) {
+			showDialogue = 0;
+			return;
+		}
+		// Cropland (Nadira - Level 1)
+		if (playerX >= 530 && playerX <= 630 && playerY >= 420 && playerY <= 500) {
+			sprintf(npcName, "Nadira");
+			sprintf(dialogueText, "Welcome Zubayer! Let's work on Cropland.");
+			showDialogue = 1;
+			gameState = STATE_LEVEL_1;
+		}
+		// Ranch (Ragib - Level 2)
+		else if (playerX >= 530 && playerX <= 630 && playerY >= 220 && playerY <= 300) {
+			sprintf(npcName, "Ragib");
+			sprintf(dialogueText, level2Unlocked ? "Entering Ranch..." : "Clear Level 1 first!");
+			showDialogue = 1;
+		}
+		// Fishery (Anika - Level 3)
+		else if (playerX >= 530 && playerX <= 630 && playerY >= 20 && playerY <= 100) {
+			sprintf(npcName, "Anika");
+			sprintf(dialogueText, level3Unlocked ? "Entering Fishery..." : "Clear Level 2 first!");
+			showDialogue = 1;
+		}
+	}
+}
+void iSpecialKeyboard(unsigned char key) {
+	if (gameState == STATE_TOWN && !showDialogue) {
+		if (key == GLUT_KEY_UP && playerY < 520) playerY += playerSpeed;
+		if (key == GLUT_KEY_DOWN && playerY > 20) playerY -= playerSpeed;
+		if (key == GLUT_KEY_LEFT && playerX > 20) playerX -= playerSpeed;
+		if (key == GLUT_KEY_RIGHT && playerX < 740) playerX += playerSpeed;
+	}
+}
 void fixedUpdate() {}
 
 int main() {
