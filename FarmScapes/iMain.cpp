@@ -316,12 +316,20 @@ void iSpecialKeyboard(unsigned char key) {
 	}
 }
 void fixedUpdate() {}
+void updateSeasonTimer() {
+	seasonTimer++;
+	if (seasonTimer >= 1800) { // Changes every 30 minutes (1800 seconds)
+		seasonTimer = 0;
+		currentSeason = (currentSeason + 1) % 3;
+	}
+}
 
 int main() {
 	initFarmGrid();
 	initAudio();
 
 	iSetTimer(1000, updateCropGrowth);
+	iSetTimer(1000, updateSeasonTimer);
 
 	iInitialize(800, 600, "FarmScapes - 2D Farming Simulator");
 	iStart();
