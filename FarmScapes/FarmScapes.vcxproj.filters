@@ -26,5 +26,8 @@
     <ClInclude Include="iGraphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="drawTown.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
