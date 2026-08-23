@@ -7,6 +7,7 @@
 //  Version: 4.0
 //
 
+#pragma once
 # include <stdio.h>
 # include <stdlib.h>
 #pragma comment(lib, "glut32.lib")
