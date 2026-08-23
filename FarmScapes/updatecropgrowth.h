@@ -97,7 +97,8 @@ inline void updateCropGrowth() {
 			for (int r = 0; r < GRID_ROWS; r++) {
 				for (int c = 0; c < GRID_COLS; c++) {
 					int s = farmGrid[r][c].state;
-					if (s == CROP_PLOWED || s == CROP_SEEDED || s == CROP_WATERED ||
+					// Fix: Only actual planted crops rot. Plowed dirt (CROP_PLOWED) is ignored.
+					if (s == CROP_SEEDED || s == CROP_WATERED ||
 						s == CROP_READY || s == TOMATO_READY || s == BERRY_TREE || s == BERRY_READY) {
 						farmGrid[r][c].state = CROP_ROTTEN;
 					}
