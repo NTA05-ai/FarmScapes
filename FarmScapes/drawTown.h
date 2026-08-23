@@ -2,6 +2,7 @@
 #define DRAW_TOWN_H
 
 #include "iGraphics.h"
+#include "bitmap_loader.h"
 
 extern int currentSeason;
 extern int playerX;
@@ -12,11 +13,12 @@ extern char npcName[50];
 
 // 1. COLLISION LOGIC
 int canWalk(int newX, int newY) {
-	if (newY >= 380 && newY <= 420 && newX >= 120 && newX <= 750) return 1;
-	if (newX >= 360 && newX <= 400 && newY >= 60 && newY <= 400) return 1;
-	if (newY >= 250 && newY <= 290 && newX >= 380 && newX <= 720) return 1;
-	if (newY >= 140 && newY <= 180 && newX >= 380 && newX <= 720) return 1;
-	if (newX >= 120 && newX <= 150 && newY >= 380 && newY <= 450) return 1;
+	// Adjusted bounds so the starting position (400, 300) is valid
+	if (newY >= 280 && newY <= 420 && newX >= 100 && newX <= 750) return 1;
+	if (newX >= 360 && newX <= 420 && newY >= 50 && newY <= 420) return 1;
+	if (newY >= 230 && newY <= 300 && newX >= 350 && newX <= 720) return 1;
+	if (newY >= 130 && newY <= 190 && newX >= 350 && newX <= 720) return 1;
+	if (newX >= 100 && newX <= 160 && newY >= 350 && newY <= 460) return 1;
 
 	return 0;
 }
@@ -28,8 +30,9 @@ void drawTown() {
 	else if (currentSeason == 1) iShowBMP(0, 0, "assets/town_rainy_bg.bmp");
 	else if (currentSeason == 2) iShowBMP(0, 0, "assets/town_winter_bg.bmp");
 
-	// Render player character (Zubayer)
-	iShowBMP(playerX, playerY, "assets/zubayer_player.bmp");
+	// Render player character using standard transparent loader
+	// (0 ignore Color Key treats pure black background as transparent)
+	iShowBMP2(playerX, playerY, "assets/zubayer_player.bmp", 0);
 
 	// Render Dialogue Box Overlay
 	if (showDialogue) {
@@ -41,13 +44,13 @@ void drawTown() {
 
 		// Render NPC Portrait inside the box on the left side
 		if (strcmp(npcName, "Nadira") == 0) {
-			iShowBMP(95, 45, "assets/portrait_nadira.bmp");
+			iShowBMP2(95, 45, "assets/portrait_nadira.bmp", 0);
 		}
 		else if (strcmp(npcName, "Ragib") == 0) {
-			iShowBMP(95, 45, "assets/portrait_ragib.bmp");
+			iShowBMP2(95, 45, "assets/portrait_ragib.bmp", 0);
 		}
 		else if (strcmp(npcName, "Anika") == 0) {
-			iShowBMP(95, 45, "assets/portrait_anika.bmp");
+			iShowBMP2(95, 45, "assets/portrait_anika.bmp", 0);
 		}
 
 		// Text display offset to the right of the portrait
@@ -57,4 +60,4 @@ void drawTown() {
 	}
 }
 
-#endif
+#endif // DRAW_TOWN_H
