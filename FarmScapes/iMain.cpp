@@ -29,7 +29,7 @@ int musicOn = 1;
 
 // --- TOWN & SEASON VARIABLES ---
 int playerX = 400, playerY = 300, playerSpeed = 8;
-int currentSeason = 0, seasonTimer = 0; // 0=Summer, 1=Rainy, 2=Winter
+int currentSeason = 0, seasonTimer = 120; // 0=Summer, 1=Rainy, 2=Winter
 int showDialogue = 0;
 char dialogueText[200] = "";
 char npcName[50] = "";
@@ -100,7 +100,7 @@ void iMouse(int button, int state, int mx, int my) {
 		// 1. MENU: Play button transitions directly to LEVEL 1
 		if (gameState == STATE_MENU) {
 			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) {
-				gameState = STATE_LEVEL_1; // Changed from STATE_TOWN to STATE_LEVEL_1
+				gameState = STATE_LEVEL_1;
 			}
 			else if (mx >= 290 && mx <= 510 && my >= 320 && my <= 390) gameState = STATE_SETTINGS;
 			else if (mx >= 290 && mx <= 510 && my >= 230 && my <= 300) gameState = STATE_CREDITS;
@@ -121,21 +121,35 @@ void iMouse(int button, int state, int mx, int my) {
 		else if (gameState == STATE_CREDITS) {
 			if (mx >= 290 && mx <= 510 && my >= 140 && my <= 210) gameState = STATE_MENU;
 		}
-		// 3. LEVEL 1: Top-Right button transitions to TOWN EXPLORATION
+		// 3. TOWN STATE
+		else if (gameState == STATE_TOWN) {
+			// Return to Menu Button (Bottom Right: X=670-780, Y=20-60)
+			if (mx >= 670 && mx <= 780 && my >= 20 && my <= 60) {
+				gameState = STATE_MENU;
+				return;
+			}
+		}
+		// 4. LEVEL 1 STATE
 		else if (gameState == STATE_LEVEL_1) {
 			if (showCapWarning) {
 				showCapWarning = 0;
 			}
 
-			// Complete / Go to Town Button (Top Right: X=670-790, Y=550-600)
-			if (mx >= 670 && mx <= 790 && my >= 550 && my <= 600) {
-				gameState = STATE_TOWN; // Moves forward to Town Map
+			// Market Button (X: 420-520, Y: 552-586)
+			if (mx >= 420 && mx <= 520 && my >= 552 && my <= 586) {
+				isMarketOpen = !isMarketOpen;
 				return;
 			}
 
-			// Toggle Market
-			if (mx >= 540 && mx <= 650 && my >= 552 && my <= 586) {
-				isMarketOpen = !isMarketOpen;
+			// Explore Town Button (X: 535-655, Y: 552-586)
+			if (mx >= 535 && mx <= 655 && my >= 552 && my <= 586) {
+				gameState = STATE_TOWN;
+				return;
+			}
+
+			// Menu Button (X: 670-780, Y: 552-586)
+			if (mx >= 670 && mx <= 780 && my >= 552 && my <= 586) {
+				gameState = STATE_MENU;
 				return;
 			}
 
@@ -368,12 +382,15 @@ void iKeyboard(unsigned char key) {
 void iSpecialKeyboard(unsigned char key) {}
 
 void updateSeasonTimer() {
-	seasonTimer++;
-	if (seasonTimer >= 1800) {
-		seasonTimer = 0;
-		currentSeason = (currentSeason + 1) % 3;
+	if (seasonTimer > 0) {
+		seasonTimer--;
+	}
+	else {
+		currentSeason = (currentSeason + 1) % 3; // Rotates between 0, 1, and 2
+		seasonTimer = 120;                       // Reset back to 2 minutes
 	}
 }
+
 void iAnim() {
 	// Empty function used strictly to force GLUT to process keyboard input frames
 }
