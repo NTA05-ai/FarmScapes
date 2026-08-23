@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mmsystem.h>
+
 #pragma comment(lib, "winmm.lib")
 
 #define STATE_MENU 0
@@ -12,7 +13,7 @@
 #define STATE_SETTINGS 2
 #define STATE_CREDITS 3
 #define STATE_LOADING 4
-#define STATE_TOWN 5 
+#define STATE_TOWN 5
 
 int gameState = STATE_MENU;
 int musicOn = 1;
@@ -62,8 +63,6 @@ int hasRottenCrop = 0;
 
 Tile farmGrid[GRID_ROWS][GRID_COLS];
 
-
-
 void iDraw() {
 	iClear();
 
@@ -106,9 +105,9 @@ void iMouse(int button, int state, int mx, int my) {
 				showCapWarning = 0;
 			}
 
-			// Menu button
+			// Menu / Back to Town Button
 			if (mx >= 670 && mx <= 790 && my >= 550 && my <= 600) {
-				gameState = STATE_MENU;
+				gameState = STATE_TOWN; // Return directly to Town Map
 				return;
 			}
 
@@ -242,19 +241,22 @@ void iMouse(int button, int state, int mx, int my) {
 								if (cropRiceCount < MAX_INVENTORY_CAP) {
 									t->state = CROP_EMPTY;
 									cropRiceCount++;
-								} else { showCapWarning = 1; }
+								}
+								else { showCapWarning = 1; }
 							}
 							else if (t->state == TOMATO_READY) {
 								if (cropTomatoCount < MAX_INVENTORY_CAP) {
 									t->state = CROP_EMPTY;
 									cropTomatoCount++;
-								} else { showCapWarning = 1; }
+								}
+								else { showCapWarning = 1; }
 							}
 							else if (t->state == BERRY_READY) {
 								if (cropBerryCount < MAX_INVENTORY_CAP) {
 									t->state = CROP_EMPTY;
 									cropBerryCount++;
-								} else { showCapWarning = 1; }
+								}
+								else { showCapWarning = 1; }
 							}
 
 							int activeCrops = 0;
@@ -280,6 +282,7 @@ void iMouse(int button, int state, int mx, int my) {
 
 void iMouseMove(int mx, int my) {}
 void iPassiveMouseMove(int mx, int my) {}
+
 void iKeyboard(unsigned char key) {
 	if ((key == 'e' || key == 'E') && gameState == STATE_TOWN) {
 		if (showDialogue) {
@@ -287,26 +290,25 @@ void iKeyboard(unsigned char key) {
 			return;
 		}
 		// Cropland (Nadira - Level 1)
-		if (playerX >= 530 && playerX <= 630 && playerY >= 420 && playerY <= 500) {
-			sprintf(npcName, "Nadira");
-			sprintf(dialogueText, "Welcome Zubayer! Let's work on Cropland.");
-			showDialogue = 1;
+		if (playerX >= 520 && playerX <= 680 && playerY >= 370 && playerY <= 430) {
+			showDialogue = 0;
 			gameState = STATE_LEVEL_1;
 		}
 		// Ranch (Ragib - Level 2)
-		else if (playerX >= 530 && playerX <= 630 && playerY >= 220 && playerY <= 300) {
+		else if (playerX >= 500 && playerX <= 660 && playerY >= 240 && playerY <= 300) {
 			sprintf(npcName, "Ragib");
 			sprintf(dialogueText, level2Unlocked ? "Entering Ranch..." : "Clear Level 1 first!");
 			showDialogue = 1;
 		}
 		// Fishery (Anika - Level 3)
-		else if (playerX >= 530 && playerX <= 630 && playerY >= 20 && playerY <= 100) {
+		else if (playerX >= 500 && playerX <= 660 && playerY >= 130 && playerY <= 190) {
 			sprintf(npcName, "Anika");
 			sprintf(dialogueText, level3Unlocked ? "Entering Fishery..." : "Clear Level 2 first!");
 			showDialogue = 1;
 		}
 	}
 }
+
 void iSpecialKeyboard(unsigned char key) {
 	if (gameState == STATE_TOWN && !showDialogue) {
 		if (key == GLUT_KEY_UP && canWalk(playerX, playerY + playerSpeed)) {
@@ -323,7 +325,9 @@ void iSpecialKeyboard(unsigned char key) {
 		}
 	}
 }
+
 void fixedUpdate() {}
+
 void updateSeasonTimer() {
 	seasonTimer++;
 	if (seasonTimer >= 1800) { // Changes every 30 minutes (1800 seconds)
