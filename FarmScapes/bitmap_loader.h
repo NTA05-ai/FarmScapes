@@ -1,31 +1,20 @@
 /*
- * bitmap_loader.h
- *
- *  Created on: Jan 8, 2017
- *  Updated on: January 27, 2017
- *      Author: Jisan Mahmud
- */
+* bitmap_loader.h
+* Created on: Jan 8, 2017
+* Updated on: January 27, 2017
+* Author: Jisan Mahmud
+*/
+
+#ifndef BITMAP_LOADER_H
+#define BITMAP_LOADER_H
 
 #pragma warning(disable:4996)
 #include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
+
 #define _RGB_TO_INT(rgb) ((rgb).rgbtRed | ((rgb).rgbtGreen << 8) | ((rgb).rgbtBlue << 16))
 
-//
-// Puts a BMP image on screen
-//
-// parameters:
-//  x - x coordinate
-//  y - y coordinate
-//  fileName - name of the BMP file
-//  ignoreColor - A specified color that should not be rendered. If you have an
-//                image strip that should be rendered on top of another back
-//                ground image, then the background of the image strip should
-//                not get rendered. Use the background color of the image strip
-//                in ignoreColor parameter. Then the strip's background does
-//                not get rendered.
-//
-//                To disable this feature, put -1 in this parameter
-//
 void iShowBMPAlternative2(int x, int y, char fileName[], int ignoreColor)
 {
 	FILE *bmpFile;
@@ -74,14 +63,6 @@ void iShowBMPAlternative2(int x, int y, char fileName[], int ignoreColor)
 	free(pixelMap);
 }
 
-//
-// Puts a BMP image on screen
-//
-// parameters:
-//  x - x coordinate
-//  y - y coordinate
-//  fileName - name of the BMP file
-//
 void iShowBMPAlternative(int x, int y, char fileName[])
 {
 	iShowBMPAlternative2(x, y, fileName, -1);
@@ -111,3 +92,5 @@ void iShowBMPAlternativeSkipWhite(int x, int y, char fileName[])
 {
 	iShowBMPAlternative2(x, y, fileName, (1 << 24) - 1);
 }
+
+#endif
