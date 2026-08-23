@@ -20,25 +20,26 @@ extern int tomatoBuyPrice, tomatoSellPrice;
 extern int berryBuyPrice, berrySellPrice;
 
 inline void drawMarketplaceUI() {
-	// 1. Deep Walnut Brown Background (High contrast against light wooden buttons)
+	
 	iSetColor(50, 28, 14);
 	iFilledRectangle(100, 70, 600, 440);
 
-	// Soft muted border (Replaced bright yellow box to eliminate harsh outlines)
+	
 	iSetColor(140, 95, 45);
 	iRectangle(100, 70, 600, 440);
 
-	// Marketplace Title Header
+	
 	iShowBMPAlternative2(280, 465, "assets/market.bmp", 0xFFFFFF);
 
-	// Current Gold Header & Dynamic Text
+	
 	iShowBMPAlternative2(130, 435, "assets/gold.bmp", 0xFFFFFF);
 	char buf[64];
 	sprintf_s(buf, sizeof(buf), "$%d", playerGold);
 	iSetColor(240, 200, 80);
 	iText(270, 442, buf, GLUT_BITMAP_HELVETICA_18);
 
-	// Sell Inventory Section
+	
+	
 	iShowBMPAlternative2(130, 400, "assets/scrops.bmp", 0xFFFFFF);
 
 	iSetColor(230, 210, 170);

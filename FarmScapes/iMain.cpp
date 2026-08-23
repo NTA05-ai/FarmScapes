@@ -112,9 +112,7 @@ void iMouse(int button, int state, int mx, int my) {
 		// 2. SETTINGS / CREDITS: Back buttons return to MENU
 		else if (gameState == STATE_SETTINGS) {
 			if (mx >= 290 && mx <= 510 && my >= 340 && my <= 410) {
-				musicOn = !musicOn;
-				if (musicOn) mciSendString("play bgmusic repeat", NULL, 0, NULL);
-				else mciSendString("pause bgmusic", NULL, 0, NULL);
+				toggleMusic();
 			}
 			else if (mx >= 290 && mx <= 510 && my >= 220 && my <= 290) gameState = STATE_MENU;
 		}
@@ -202,10 +200,6 @@ void iMouse(int button, int state, int mx, int my) {
 						}
 					}
 				}
-				if (!batchActive) {
-					batchActive = 1;
-					batchTimer = 20;
-				}
 				return;
 			}
 
@@ -229,20 +223,6 @@ void iMouse(int button, int state, int mx, int my) {
 							if (t->state == CROP_EMPTY || t->state == CROP_ROTTEN) {
 								t->state = CROP_PLOWED;
 								t->growTimer = 0;
-
-								int allPlowed = 1;
-								for (int r2 = 0; r2 < GRID_ROWS; r2++) {
-									for (int c2 = 0; c2 < GRID_COLS; c2++) {
-										if (farmGrid[r2][c2].state != CROP_PLOWED) {
-											allPlowed = 0; break;
-										}
-									}
-								}
-
-								if (allPlowed && !batchActive) {
-									batchActive = 1;
-									batchTimer = 20;
-								}
 							}
 						}
 						// 2. PLANT
@@ -251,16 +231,31 @@ void iMouse(int button, int state, int mx, int my) {
 								seedBerry--;
 								t->cropType = 2;
 								t->state = BERRY_TREE;
+								t->growTimer = 0;
+								if (!batchActive) {
+									batchActive = 1;
+									batchTimer = 20;
+								}
 							}
 							else if (seedTomato > 0) {
 								seedTomato--;
 								t->cropType = 1;
 								t->state = CROP_SEEDED;
+								t->growTimer = 0;
+								if (!batchActive) {
+									batchActive = 1;
+									batchTimer = 20;
+								}
 							}
 							else if (seedRice > 0) {
 								seedRice--;
 								t->cropType = 0;
 								t->state = CROP_SEEDED;
+								t->growTimer = 0;
+								if (!batchActive) {
+									batchActive = 1;
+									batchTimer = 20;
+								}
 							}
 						}
 						// 3. WATER
@@ -294,10 +289,13 @@ void iMouse(int button, int state, int mx, int my) {
 								else { showCapWarning = 1; }
 							}
 
+							// Fix: Only count actual active crops (ignoring plowed/empty dirt)
 							int activeCrops = 0;
 							for (int r2 = 0; r2 < GRID_ROWS; r2++) {
 								for (int c2 = 0; c2 < GRID_COLS; c2++) {
-									if (farmGrid[r2][c2].state != CROP_EMPTY) {
+									int s = farmGrid[r2][c2].state;
+									if (s == CROP_SEEDED || s == CROP_WATERED || s == CROP_READY ||
+										s == TOMATO_READY || s == BERRY_TREE || s == BERRY_READY) {
 										activeCrops++;
 									}
 								}
@@ -305,6 +303,7 @@ void iMouse(int button, int state, int mx, int my) {
 
 							if (activeCrops == 0) {
 								batchActive = 0;
+								batchTimer = 0;
 								hasRottenCrop = 0;
 							}
 						}
