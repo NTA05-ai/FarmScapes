@@ -29,5 +29,8 @@
     <ClInclude Include="drawTown.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="drawlevel1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
