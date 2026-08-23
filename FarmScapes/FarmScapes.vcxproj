@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap_loader.h" />
+    <ClInclude Include="drawlevel1.h" />
     <ClInclude Include="drawTown.h" />
     <ClInclude Include="iGraphics.h" />
   </ItemGroup>
