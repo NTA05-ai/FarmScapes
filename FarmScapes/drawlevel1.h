@@ -95,41 +95,9 @@ inline void drawMarketplaceUI() {
 	iSetColor(255, 255, 255);
 	iText(618, 90, "CLOSE", GLUT_BITMAP_HELVETICA_12);
 }
-
 inline void drawLevel1() {
 	iSetColor(255, 255, 255);
 	iShowBMPAlternative(0, 0, "assets/mainland_bg.bmp");
-
-	// --- TOP HUD ---
-	iSetColor(40, 40, 40);
-	iFilledRectangle(0, 540, 800, 60);
-
-	iSetColor(255, 215, 0);
-	char hudStr[64];
-	sprintf_s(hudStr, sizeof(hudStr), "Total: $%d", playerGold);
-	iText(15, 562, hudStr, GLUT_BITMAP_HELVETICA_18);
-
-	iSetColor(255, 255, 255);
-	sprintf_s(hudStr, sizeof(hudStr), "Seeds (R:%d T:%d B:%d) | Crops (R:%d T:%d B:%d)",
-		seedRice, seedTomato, seedBerry, cropRiceCount, cropTomatoCount, cropBerryCount);
-	iText(130, 562, hudStr, GLUT_BITMAP_HELVETICA_10);
-
-	iSetColor(45, 130, 180);
-	iFilledRectangle(540, 552, 110, 34);
-	iSetColor(255, 255, 255);
-	iText(555, 564, "MARKET", GLUT_BITMAP_HELVETICA_12);
-
-	iSetColor(170, 45, 45);
-	iFilledRectangle(680, 552, 100, 34);
-	iSetColor(255, 255, 255);
-	iText(710, 564, "MENU", GLUT_BITMAP_HELVETICA_12);
-
-	if (batchActive) {
-		char timeText[16];
-		sprintf_s(timeText, sizeof(timeText), "%ds", batchTimer);
-		iSetColor(255, 255, 0);
-		iText(490, 562, timeText, GLUT_BITMAP_HELVETICA_18);
-	}
 
 	// --- FARM TILES ---
 	for (int r = 0; r < GRID_ROWS; r++) {
@@ -187,7 +155,7 @@ inline void drawLevel1() {
 	iSetColor(190, 155, 110);
 	iFilledRectangle(barX, 20, barWidth, 60);
 
-	// Clean flat selection state (no harsh outlines)
+	// Tool buttons
 	if (selectedTool == 1) iSetColor(45, 160, 55); else iSetColor(120, 100, 80);
 	iFilledRectangle(170, 28, 90, 44);
 	iSetColor(255, 255, 255);
@@ -216,9 +184,54 @@ inline void drawLevel1() {
 		iText(95, 34, "PLOW", GLUT_BITMAP_HELVETICA_10);
 	}
 
+	// --- TOP HUD BAR (Drawn near last) ---
+	iSetColor(40, 40, 40);
+	iFilledRectangle(0, 540, 800, 60);
+
+	// Total Gold Display
+	iSetColor(255, 215, 0);
+	char hudStr[64];
+	sprintf_s(hudStr, sizeof(hudStr), "Total: $%d", playerGold);
+	iText(10, 572, hudStr, GLUT_BITMAP_HELVETICA_12);
+
+	// ALWAYS VISIBLE TIMER (X: 10, Y: 548 - Below Gold)
+	iSetColor(255, 255, 0);
+	if (batchActive) {
+		sprintf_s(hudStr, sizeof(hudStr), "Timer: %ds", batchTimer);
+	}
+	else {
+		sprintf_s(hudStr, sizeof(hudStr), "Timer: Idle");
+	}
+	iText(10, 548, hudStr, GLUT_BITMAP_HELVETICA_12);
+
+	// Compact Inventory Info (X: 110 to 410)
+	iSetColor(255, 255, 255);
+	sprintf_s(hudStr, sizeof(hudStr), "Seeds: R:%d T:%d B:%d | Crops: R:%d T:%d B:%d",
+		seedRice, seedTomato, seedBerry, cropRiceCount, cropTomatoCount, cropBerryCount);
+	iText(110, 562, hudStr, GLUT_BITMAP_HELVETICA_10);
+
+	// Buttons (X: 420 to 780)
+	iSetColor(45, 130, 180);
+	iFilledRectangle(420, 552, 100, 34);
+	iSetColor(255, 255, 255);
+	iRectangle(420, 552, 100, 34);
+	iText(442, 564, "MARKET", GLUT_BITMAP_HELVETICA_12);
+
+	iSetColor(40, 160, 120);
+	iFilledRectangle(535, 552, 120, 34);
+	iSetColor(255, 255, 255);
+	iRectangle(535, 552, 120, 34);
+	iText(547, 564, "Explore Town", GLUT_BITMAP_HELVETICA_12);
+
+	iSetColor(170, 45, 45);
+	iFilledRectangle(670, 552, 110, 34);
+	iSetColor(255, 255, 255);
+	iRectangle(670, 552, 110, 34);
+	iText(705, 564, "MENU", GLUT_BITMAP_HELVETICA_12);
+
+	// Marketplace Overlay
 	if (isMarketOpen) {
 		drawMarketplaceUI();
 	}
 }
-
 #endif // DRAWLEVEL1_H
