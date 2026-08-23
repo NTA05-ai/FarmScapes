@@ -29,6 +29,14 @@ void drawTown() {
 	// Render 48x48 player with pure black background ignored (0 key)
 	iShowBMP2(playerX, playerY, "assets/zubayer_player.bmp", 0);
 
+	// --- BOTTOM RIGHT: RETURN TO MENU BUTTON ---
+	iSetColor(180, 50, 50);
+	iFilledRectangle(670, 20, 110, 40); // Dark red background
+
+	iSetColor(255, 255, 255);
+	iRectangle(670, 20, 110, 40);       // White border
+	iText(705, 33, "MENU", GLUT_BITMAP_HELVETICA_12); // Button label
+
 	// Render Dialogue Overlay
 	if (showDialogue) {
 		iSetColor(30, 30, 30);
