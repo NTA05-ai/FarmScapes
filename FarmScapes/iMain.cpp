@@ -25,6 +25,7 @@
 #define STATE_TOWN 5
 
 int gameState = STATE_MENU;
+int loadingTimer = 0;
 int musicOn = 1;
 
 // --- TOWN & SEASON VARIABLES ---
@@ -97,10 +98,11 @@ void iDraw() {
 void iMouse(int button, int state, int mx, int my) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 
-		// 1. MENU: Play button transitions directly to LEVEL 1
+		// 1. MENU: Play button transitions to LOADING
 		if (gameState == STATE_MENU) {
 			if (mx >= 290 && mx <= 510 && my >= 410 && my <= 480) {
-				gameState = STATE_LEVEL_1;
+				gameState = STATE_LOADING; // Set state to loading
+				loadingTimer = 0;          // Reset timer
 			}
 			else if (mx >= 290 && mx <= 510 && my >= 320 && my <= 390) gameState = STATE_SETTINGS;
 			else if (mx >= 290 && mx <= 510 && my >= 230 && my <= 300) gameState = STATE_CREDITS;
@@ -109,7 +111,8 @@ void iMouse(int button, int state, int mx, int my) {
 				exit(0);
 			}
 		}
-		// 2. SETTINGS / CREDITS: Back buttons return to MENU
+
+		// 2. SETTINGS / CREDITS
 		else if (gameState == STATE_SETTINGS) {
 			if (mx >= 290 && mx <= 510 && my >= 340 && my <= 410) {
 				toggleMusic();
@@ -121,7 +124,6 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 		// 3. TOWN STATE
 		else if (gameState == STATE_TOWN) {
-			// Return to Menu Button (Bottom Right: X=670-780, Y=20-60)
 			if (mx >= 670 && mx <= 780 && my >= 20 && my <= 60) {
 				gameState = STATE_MENU;
 				return;
@@ -133,19 +135,19 @@ void iMouse(int button, int state, int mx, int my) {
 				showCapWarning = 0;
 			}
 
-			// Market Button (X: 420-520, Y: 552-586)
+			// Market Button
 			if (mx >= 420 && mx <= 520 && my >= 552 && my <= 586) {
 				isMarketOpen = !isMarketOpen;
 				return;
 			}
 
-			// Explore Town Button (X: 535-655, Y: 552-586)
+			// Explore Town Button
 			if (mx >= 535 && mx <= 655 && my >= 552 && my <= 586) {
 				gameState = STATE_TOWN;
 				return;
 			}
 
-			// Menu Button (X: 670-780, Y: 552-586)
+			// Menu Button
 			if (mx >= 670 && mx <= 780 && my >= 552 && my <= 586) {
 				gameState = STATE_MENU;
 				return;
@@ -289,7 +291,6 @@ void iMouse(int button, int state, int mx, int my) {
 								else { showCapWarning = 1; }
 							}
 
-							// Fix: Only count actual active crops (ignoring plowed/empty dirt)
 							int activeCrops = 0;
 							for (int r2 = 0; r2 < GRID_ROWS; r2++) {
 								for (int c2 = 0; c2 < GRID_COLS; c2++) {
@@ -389,7 +390,17 @@ void updateSeasonTimer() {
 		seasonTimer = 120;                       // Reset back to 2 minutes
 	}
 }
+// --- NEW LOADING SCREEN ANIMATION CALLBACK ---
+void updateLoading() {
+	if (gameState == STATE_LOADING) {
+		loadingTimer += 2; // Increments smoothly every 50ms
 
+		if (loadingTimer >= 100) {
+			gameState = STATE_LEVEL_1; // Transition to Level 1
+			loadingTimer = 0;
+		}
+	}
+}
 void iAnim() {
 	// Empty function used strictly to force GLUT to process keyboard input frames
 }
@@ -400,6 +411,7 @@ int main() {
 	iSetTimer(1000, updateCropGrowth);
 	iSetTimer(1000, updateSeasonTimer);
 
+	iSetTimer(50, updateLoading);
 	iSetTimer(20, iAnim);
 
 	iInitialize(SCREEN_WIDTH, SCREEN_HEIGHT, "FarmScapes - 2D Farming Simulator");
