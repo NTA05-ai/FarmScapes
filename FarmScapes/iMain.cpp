@@ -27,6 +27,7 @@
 int gameState = STATE_MENU;
 int loadingTimer = 0;
 int musicOn = 1;
+int eKeyPressedLastFrame = 0;
 
 // --- TOWN & SEASON VARIABLES ---
 int playerX = 400, playerY = 300, playerSpeed = 8;
@@ -348,31 +349,75 @@ void fixedUpdate() {
 			}
 		}
 	}
+	// --- DIALOGUE TRIGGER (Bypasses GLUT iKeyboard completely) ---
+	if (gameState == STATE_TOWN) {
+		int eIsDown = isKeyPressed('e') || isKeyPressed('E');
+
+		// Edge trigger: Only run ONCE when 'E' is first pressed down
+		if (eIsDown && !eKeyPressedLastFrame) {
+
+			// 1. Close dialogue if already open
+			if (showDialogue) {
+				showDialogue = 0;
+				if (strcmp(npcName, "Nadira") == 0) {
+					gameState = STATE_LEVEL_1; // Transition to Level 1
+				}
+			}
+			// 2. Open Nadira Dialogue
+			else if (playerX >= 480 && playerX <= 700 && playerY >= 320 && playerY <= 460) {
+				strcpy(npcName, "Nadira");
+				strcpy(dialogueText, "Welcome to the Farm! Press E again to enter Level 1.");
+				showDialogue = 1;
+			}
+			// 3. Open Ragib Dialogue
+			else if (playerX >= 450 && playerX <= 680 && playerY >= 210 && playerY <= 310) {
+				strcpy(npcName, "Ragib");
+				strcpy(dialogueText, level2Unlocked ? "Entering Ranch..." : "Welcome to the Ranch! Clear Level 1 first.");
+				showDialogue = 1;
+			}
+			// 4. Open Anika Dialogue
+			else if (playerX >= 450 && playerX <= 680 && playerY >= 100 && playerY <= 200) {
+				strcpy(npcName, "Anika");
+				strcpy(dialogueText, level3Unlocked ? "Entering Fishery..." : "Welcome to the Fishery! Clear Level 2 first.");
+				showDialogue = 1;
+			}
+		}
+
+		// Save state for next frame debounce
+		eKeyPressedLastFrame = eIsDown;
+	}
 }
 
 // Keep these blank or handle single-press toggles here (like 'E' to talk)
 void iKeyboard(unsigned char key) {
 	if (gameState == STATE_TOWN) {
 		if (key == 'e' || key == 'E') {
+
+			// 1. Close dialogue if already open
 			if (showDialogue) {
 				showDialogue = 0;
+				if (strcmp(npcName, "Nadira") == 0) {
+					gameState = STATE_LEVEL_1; // Transition to Level 1
+				}
 				return;
 			}
-			// Cropland (Nadira - Level 1)
-			if (playerX >= 520 && playerX <= 680 && playerY >= 370 && playerY <= 430) {
-				showDialogue = 0;
-				gameState = STATE_LEVEL_1;
-			}
-			// Ranch (Ragib - Level 2)
-			else if (playerX >= 500 && playerX <= 660 && playerY >= 240 && playerY <= 300) {
-				sprintf(npcName, "Ragib");
-				sprintf(dialogueText, level2Unlocked ? "Entering Ranch..." : "Clear Level 1 first!");
+
+			// 2. Open Nadira Dialogue
+			if (playerX >= 480 && playerX <= 700 && playerY >= 320 && playerY <= 460) {
+				sprintf(npcName, "Nadira");
+				sprintf(dialogueText, "Welcome to the Cropland! Press E again to start farming.");
 				showDialogue = 1;
 			}
-			// Fishery (Anika - Level 3)
-			else if (playerX >= 500 && playerX <= 660 && playerY >= 130 && playerY <= 190) {
+			// 3. Open Ragib Dialogue
+			else if (playerX >= 450 && playerX <= 680 && playerY >= 210 && playerY <= 310) {
+				sprintf(npcName, "Ragib");
+				sprintf(dialogueText, level2Unlocked ? "Entering Ranch..." : "Welcome to the Ranch! Clear Level 1 first.");
+				showDialogue = 1;
+			}
+			// 4. Open Anika Dialogue
+			else if (playerX >= 450 && playerX <= 680 && playerY >= 100 && playerY <= 200) {
 				sprintf(npcName, "Anika");
-				sprintf(dialogueText, level3Unlocked ? "Entering Fishery..." : "Clear Level 2 first!");
+				sprintf(dialogueText, level3Unlocked ? "Entering Fishery..." : "Welcome to the Fishery! Clear Level 2 first.");
 				showDialogue = 1;
 			}
 		}
