@@ -31,7 +31,7 @@ int eKeyPressedLastFrame = 0;
 
 // --- TOWN & SEASON VARIABLES ---
 int playerX = 400, playerY = 300, playerSpeed = 8;
-int currentSeason = 0, seasonTimer = 120; // 0=Summer, 1=Rainy, 2=Winter
+int currentSeason = 0, seasonTimer = 40; // 0=Summer, 1=Rainy, 2=Winter
 int showDialogue = 0;
 char dialogueText[200] = "";
 char npcName[50] = "";
@@ -432,7 +432,7 @@ void updateSeasonTimer() {
 	}
 	else {
 		currentSeason = (currentSeason + 1) % 3; // Rotates between 0, 1, and 2
-		seasonTimer = 120;                       // Reset back to 2 minutes
+		seasonTimer = 40;                       // Reset back to 40 second
 	}
 }
 // --- NEW LOADING SCREEN ANIMATION CALLBACK ---
