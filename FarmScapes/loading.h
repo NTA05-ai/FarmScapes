@@ -2,8 +2,8 @@
 #define LOADING_H
 
 void drawLoading() {
-    // 1. Pure Black Background
-    iSetColor(255, 255, 255);
+    // 1. Green Background
+	iSetColor(34, 139, 34);
     iFilledRectangle(0, 0, 800, 600);
 
     // 2. Loading Title Banner Image (480 x 80 px)
